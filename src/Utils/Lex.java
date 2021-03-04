@@ -44,6 +44,9 @@ public class Lex {
         charactere = read();
         while (charactere >= 0) {
             switch (charactere) {
+                case 38:
+                    Q21();
+                    break;
                 case 43:
                     Q7();
                     break;
@@ -81,7 +84,8 @@ public class Lex {
                 case 41:
                     Q1();
                     break;
-                case -1:break;
+                case -1:
+                    break;
                 case 10:
                 case 8:
                     charactere = read();
@@ -100,8 +104,11 @@ public class Lex {
     }
 
     private void Q1() throws IOException {
-        tokens.add(new Token(Token.T.DEL, (char) charactere, position));
+        buffer = buffer + (char) charactere;
         read();
+        tokens.add(new Token(Token.T.DEL, buffer, position));
+        buffer = new String();
+
     }
 
     private void Q3() throws IOException {
@@ -142,8 +149,11 @@ public class Lex {
     }
 
     private void Q6() throws IOException {
-        tokens.add(new Token(Token.T.ART, (char) charactere, position));
+        buffer = buffer + ((char) charactere);
         read();
+        tokens.add(new Token(Token.T.ART, (char) charactere, position));
+        buffer = new String();
+
     }
 
     private void Q7() throws IOException {
@@ -203,7 +213,7 @@ public class Lex {
     }
 
     private void Q12() throws IOException {
-        while(charactere != 10 && charactere > 0) {
+        while (charactere != 10 && charactere > 0) {
             read();
         }
     }
@@ -211,30 +221,27 @@ public class Lex {
     private void Q14() throws IOException {
         read();
         //Q15 charactere == 42
-        while (charactere != 42 && charactere > 0 && charactere != 10) {
-            System.out.println("dentro: "+charactere);
+        while (charactere != 42 && charactere > 0) {
+            System.out.println("dentro: " + charactere);
 
             read();
         }
         System.out.println("fora:" + charactere);
 
         //Q16 charactere == 47
-        if ((charactere == 10 || charactere < 0)) {
+        if ((charactere < 0)) {
             tokens.add(new Token(Token.T.CoMF, position));
-        } else if (charactere != 42) {
-            Q14();
-
         } else {
             Q15();
         }
 
     }
-    
-    private void Q15() throws IOException{
+
+    private void Q15() throws IOException {
         read();
-        if(charactere != 47){
+        if (charactere != 47) {
             Q14();
-        }else{
+        } else {
             read();
         }
     }
@@ -254,6 +261,25 @@ public class Lex {
     }
 
     private void Q20() throws IOException {
+        buffer = buffer + (char) charactere;
+        tokens.add(new Token(Token.T.LOG, buffer, position));
+    }
+
+    private void Q21() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 38) {
+            Q22();
+        } else {
+            tokens.add(new Token(Token.T.OpMF, buffer, position));
+        }
+        buffer = new String();
+        read();
+
+    }
+
+    private void Q22() throws IOException {
         buffer = buffer + (char) charactere;
         tokens.add(new Token(Token.T.LOG, buffer, position));
     }
@@ -278,5 +304,6 @@ public class Lex {
         } else {
             tokens.add(new Token(Token.T.NMF, buffer, position));
         }
+
     }
 }
