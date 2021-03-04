@@ -44,6 +44,9 @@ public class Lex {
         charactere = read();
         while (charactere >= 0) {
             switch (charactere) {
+                case 33:
+                    Q18();
+                    break;
                 case 38:
                     Q21();
                     break;
@@ -246,6 +249,20 @@ public class Lex {
         }
     }
 
+    private void Q18() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 61) {
+            Q25();
+        } else {
+            tokens.add(new Token(Token.T.LOG, buffer, position));
+        }
+        buffer = new String();
+        read();
+
+    }
+
     private void Q19() throws IOException {
         buffer = buffer + (char) charactere;
 
@@ -282,6 +299,11 @@ public class Lex {
     private void Q22() throws IOException {
         buffer = buffer + (char) charactere;
         tokens.add(new Token(Token.T.LOG, buffer, position));
+    }
+
+    private void Q25() throws IOException {
+        buffer = buffer + (char) charactere;
+        tokens.add(new Token(Token.T.REL, buffer, position));
     }
 
     private boolean isNumber(int charactere) {
