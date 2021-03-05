@@ -8,6 +8,8 @@ package Utils;
 import Model.Token;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 
 /**
@@ -19,36 +21,56 @@ public class Lex {
     Reader input;
     LinkedList<Token> tokens;
     int charactere = 0;
-    int[] position = {0, -1};
+    int[] position = {1, 0}; //In the future can have col
     String buffer = new String();
+    String[] PLE = {"var", "const", "typedef", "struct", "extends", "procedure", "function", "start", "return", "if", "else", "then", "while", "read", "print", "int", "real", "boolean", "string", "true", "false", "global", "local"};
+    HashMap<Integer, String> listPLE;
 
     public Lex(Reader input) throws IOException {
         this.input = input;
+        listPLE = new HashMap<Integer, String>();
+        for (String PLE1 : PLE) {
+            listPLE.put(PLE1.hashCode(), PLE1);
+        }
+
     }
 
     private int read() throws IOException {
-        charactere = input.read();
         if (charactere == 10) {
             position[0] = position[0] + 1;
             position[1] = 0;
-        } else {
-            position[1] = position[1] + 1;
         }
+        charactere = input.read();
         return charactere;
     }
 
     //Q0
-    public LinkedList<Token> lda() throws IOException {
+    public void lda() throws IOException {
         tokens = new <Token>LinkedList();
         buffer = new String();
         charactere = read();
         while (charactere >= 0) {
             switch (charactere) {
+                //Caracteres ignorados
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                case 13:
+                case 32:
+                    charactere = read();
+                    break;
                 case 33:
                     Q18();
                     break;
+                case 34:
+                    Q30();
+                    break;
                 case 38:
                     Q21();
+                    break;
+                case 42:
+                    Q6();
                     break;
                 case 43:
                     Q7();
@@ -59,9 +81,9 @@ public class Lex {
                 case 47:
                     Q11();
                     break;
-                case 42:
-                    Q6();
-                    break;
+
+                //Números
+                case 48:
                 case 49:
                 case 50:
                 case 51:
@@ -73,9 +95,20 @@ public class Lex {
                 case 57:
                     Q4();
                     break;
+                case 60:
+                    Q28_Q26();
+                    break;
+                case 61:
+                    Q23();
+                    break;
+                case 62:
+                    Q28_Q26();
+                    break;
                 case 124:
                     Q19();
                     break;
+
+                //Delimitadores
                 case 123:
                 case 125:
                 case 91:
@@ -87,25 +120,19 @@ public class Lex {
                 case 41:
                     Q1();
                     break;
-                case -1:
-                    break;
-                case 10:
-                case 8:
-                    charactere = read();
-                    break;
                 default: {
                     if (isAlpha(charactere)) {
                         Q3();
-                        break;
+                    } else {
+                        tokens.add(new Token(Token.T.SIB, (char) charactere, position));
+                        charactere = read();
                     }
-                    charactere = read();
-                    System.out.println((char) charactere);
                 }
             }
         }
-        return tokens;
     }
 
+    //Estádo final para Delimitadores
     private void Q1() throws IOException {
         buffer = buffer + (char) charactere;
         read();
@@ -119,7 +146,13 @@ public class Lex {
             buffer = buffer + (char) charactere;
             read();
         }
-        tokens.add(new Token(Token.T.IDE, buffer, position));
+        if (listPLE.containsKey(buffer.toLowerCase().hashCode())) {
+            tokens.add(new Token(Token.T.PRE, buffer.toLowerCase(), position));
+
+        } else {
+            tokens.add(new Token(Token.T.IDE, buffer, position));
+
+        }
         buffer = new String();
 
     }
@@ -207,7 +240,6 @@ public class Lex {
                 Q12();
                 break;
             default:
-                System.out.println(buffer);
                 tokens.add(new Token(Token.T.ART, buffer, position));
                 break;
         }
@@ -225,11 +257,8 @@ public class Lex {
         read();
         //Q15 charactere == 42
         while (charactere != 42 && charactere > 0) {
-            System.out.println("dentro: " + charactere);
-
             read();
         }
-        System.out.println("fora:" + charactere);
 
         //Q16 charactere == 47
         if ((charactere < 0)) {
@@ -249,71 +278,6 @@ public class Lex {
         }
     }
 
-    private void Q18() throws IOException {
-        buffer = buffer + (char) charactere;
-
-        read();
-        if (charactere == 61) {
-            Q25();
-        } else {
-            tokens.add(new Token(Token.T.LOG, buffer, position));
-        }
-        buffer = new String();
-        read();
-
-    }
-
-    private void Q19() throws IOException {
-        buffer = buffer + (char) charactere;
-
-        read();
-        if (charactere == 124) {
-            Q20();
-        } else {
-            tokens.add(new Token(Token.T.OpMF, buffer, position));
-        }
-        buffer = new String();
-        read();
-
-    }
-
-    private void Q20() throws IOException {
-        buffer = buffer + (char) charactere;
-        tokens.add(new Token(Token.T.LOG, buffer, position));
-    }
-
-    private void Q21() throws IOException {
-        buffer = buffer + (char) charactere;
-
-        read();
-        if (charactere == 38) {
-            Q22();
-        } else {
-            tokens.add(new Token(Token.T.OpMF, buffer, position));
-        }
-        buffer = new String();
-        read();
-
-    }
-
-    private void Q22() throws IOException {
-        buffer = buffer + (char) charactere;
-        tokens.add(new Token(Token.T.LOG, buffer, position));
-    }
-
-    private void Q25() throws IOException {
-        buffer = buffer + (char) charactere;
-        tokens.add(new Token(Token.T.REL, buffer, position));
-    }
-
-    private boolean isNumber(int charactere) {
-        return (charactere >= 49 && charactere <= 57);
-    }
-
-    private boolean isAlpha(int charactere) {
-        return (charactere >= 65 && charactere <= 90) || (charactere >= 97 && charactere <= 122);
-    }
-
     private void Q17() throws IOException {
         boolean hasNumber = false;
         while (charactere >= 0 && isNumber(charactere)) {
@@ -328,4 +292,185 @@ public class Lex {
         }
 
     }
+
+    private void Q18() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 61) {
+            Q29_Q27_Q25_Q24();
+        } else {
+            tokens.add(new Token(Token.T.LOG, buffer, position));
+        }
+        buffer = new String();
+
+    }
+
+    private void Q19() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 124) {
+            Q20_Q22();
+        } else {
+            tokens.add(new Token(Token.T.OpMF, buffer, position));
+        }
+        buffer = new String();
+
+    }
+
+    private void Q20_Q22() throws IOException {
+        buffer = buffer + (char) charactere;
+        tokens.add(new Token(Token.T.LOG, buffer, position));
+        read();
+
+    }
+
+    private void Q21() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 38) {
+            Q20_Q22();
+        } else {
+            tokens.add(new Token(Token.T.OpMF, buffer, position));
+        }
+        buffer = new String();
+
+    }
+
+    private void Q23() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 61) {
+            Q29_Q27_Q25_Q24();
+        } else {
+            tokens.add(new Token(Token.T.REL, buffer, position));
+        }
+        buffer = new String();
+
+    }
+
+    //Q24
+    private void Q29_Q27_Q25_Q24() throws IOException {
+        buffer = buffer + (char) charactere;
+        tokens.add(new Token(Token.T.REL, buffer, position));
+        read();
+    }
+
+    private void Q28_Q26() throws IOException {
+        buffer = buffer + (char) charactere;
+
+        read();
+        if (charactere == 61) {
+            Q29_Q27_Q25_Q24();
+        } else {
+            tokens.add(new Token(Token.T.REL, buffer, position));
+        }
+        buffer = new String();
+        read();
+    }
+
+    private void Q30() throws IOException {
+        buffer = buffer + (char) charactere;
+        read();
+        if (charactere == 92) {
+            Q31();
+        } else if (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) {
+            Q32();
+        } else if (charactere == 34) {
+            Q34();
+        } else {
+            CMF();
+        }
+
+    }
+
+    private void Q31() throws IOException {
+        buffer = buffer + (char) charactere;
+        read();
+        if (charactere == 34) {
+            Q33();
+        } else {
+            Q32();
+        }
+
+    }
+
+    private void Q32() throws IOException {
+        while (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) {
+            buffer = buffer + (char) charactere;
+            read();
+        }
+        switch (charactere) {
+            case 92:
+                Q31();
+                break;
+            case 34:
+                Q34();
+                break;
+            default:
+                CMF();
+                break;
+        }
+
+    }
+
+    private void Q33() throws IOException {
+        buffer = buffer + (char) charactere;
+        read();
+        if (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) {
+            Q32();
+        } else if (charactere == 34) {
+            Q34();
+        } else {
+            CMF();
+        }
+    }
+
+    private void Q34() throws IOException {
+        buffer = buffer + (char) charactere;
+        tokens.add(new Token(Token.T.CAD, buffer, position));
+        buffer = new String();
+        read();
+    }
+
+    private void CMF() throws IOException {
+        while (charactere != 34 && charactere != 10 && charactere > 0) {
+            if (charactere == 92) {
+                read();
+                buffer = buffer + (char) charactere;
+            }
+            read();
+            if (charactere != 10)
+                buffer = buffer + (char) charactere;
+            
+        }
+        tokens.add(new Token(Token.T.CMF, buffer, position));
+        buffer = new String();
+        read();
+    }
+
+    private boolean isNumber(int charactere) {
+        return (charactere >= 48 && charactere <= 57);
+    }
+
+    private boolean isAlpha(int charactere) {
+        return (charactere >= 65 && charactere <= 90) || (charactere >= 97 && charactere <= 122);
+    }
+
+    private boolean isSimbol(int charactere) {
+        return (charactere >= 32 && charactere <= 126 && charactere != 34);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Token token : tokens) {
+            result.append(token.toString() + "\n");
+        }
+        return result.toString();
+    }
+
 }
