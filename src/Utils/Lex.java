@@ -249,21 +249,25 @@ public class Lex {
 
     private void Q12() throws IOException {
         while (charactere != 10 && charactere > 0) {
+            buffer = buffer + (char) charactere;
             read();
         }
     }
 
     private void Q14() throws IOException {
+        buffer = buffer + (char) charactere;
         read();
         //Q15 charactere == 42
         while (charactere != 42 && charactere > 0) {
+            buffer = buffer + (char) charactere;
             read();
         }
-
         //Q16 charactere == 47
         if ((charactere < 0)) {
-            tokens.add(new Token(Token.T.CoMF, position));
+            tokens.add(new Token(Token.T.CoMF, buffer, position));
+            buffer = new String();
         } else {
+            buffer = buffer + (char) charactere;
             Q15();
         }
 
@@ -275,6 +279,7 @@ public class Lex {
             Q14();
         } else {
             read();
+            buffer = new String();
         }
     }
 
@@ -392,14 +397,14 @@ public class Lex {
         read();
         if (charactere == 34) {
             Q33();
-        } else {
+        } else if (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) {
             Q32();
         }
 
     }
 
     private void Q32() throws IOException {
-        while (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) {
+        while (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere) && charactere != 92) {
             buffer = buffer + (char) charactere;
             read();
         }
@@ -443,9 +448,10 @@ public class Lex {
                 buffer = buffer + (char) charactere;
             }
             read();
-            if (charactere != 10)
+            if (charactere != 10) {
                 buffer = buffer + (char) charactere;
-            
+            }
+
         }
         tokens.add(new Token(Token.T.CMF, buffer, position));
         buffer = new String();
@@ -467,9 +473,9 @@ public class Lex {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Token token : tokens) {
-            result.append(token.toString() + "\n");
-        }
+        tokens.forEach((token) -> {
+            result.append(token.toString()).append("\n");
+        });
         return result.toString();
     }
 
