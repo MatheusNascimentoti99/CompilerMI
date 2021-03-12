@@ -72,7 +72,7 @@ public class main {
                                 PrintWriter gravarArq = new PrintWriter(arqOutput);
                                 lex.createListTokens();
                                 gravarArq.print(lex.toString());
-                                System.out.println("Criado outputFile: saida" + numberEndFile.group() + ".txt");
+                                System.out.println("Criado output: saida" + numberEndFile.group() + ".txt");
                                 System.out.println(lex.hasErros() ? "Arquivo possue erros\n" : "Arquivo analisado sem erros\n");
                             } catch (IOException e) {
                                 System.err.println("Não foi possível criar o arquivo " + outputPath.toString() + "/saida" + numberEndFile.group() + ".txt");
