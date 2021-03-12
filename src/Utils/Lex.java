@@ -9,7 +9,6 @@ import Model.Token;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedList;
 
 /**
@@ -28,13 +27,14 @@ public class Lex {
 
     public Lex(Reader input) throws IOException {
         this.input = input;
-        listPLE = new HashMap<Integer, String>();
+        listPLE = new HashMap<>();
         for (String PLE1 : PLE) {
             listPLE.put(PLE1.hashCode(), PLE1);
         }
 
     }
 
+    //Função para ler próximo caractere e contar linha e coluna
     private int read() throws IOException {
         if (charactere == 10) {
             position[0] = position[0] + 1;
@@ -45,13 +45,17 @@ public class Lex {
     }
 
     //Q0
-    public void lda() throws IOException {
+    public void createListTokens() throws IOException {
         tokens = new <Token>LinkedList();
         buffer = new String();
         charactere = read();
+
+        //Estado inicial do Autômato finito
         while (charactere >= 0) {
             switch (charactere) {
-                //Caracteres ignorados
+                /*
+                    ***********Caracteres ignorados********
+                 */
                 case 8:
                 case 9:
                 case 10:
@@ -60,29 +64,38 @@ public class Lex {
                 case 32:
                     charactere = read();
                     break;
-                case 33:
+
+                case 33: //Entrada !
                     Q18();
                     break;
-                case 34:
+
+                case 34: //Entrada "
                     Q30();
                     break;
-                case 38:
+
+                case 38: //Entrada &
                     Q21();
                     break;
-                case 42:
+
+                case 42: //Entrada *
                     Q6();
                     break;
-                case 43:
+
+                case 43: //Entrada +
                     Q7();
                     break;
-                case 45:
+
+                case 45: //Entrada -
                     Q9();
                     break;
-                case 47:
+
+                case 47: //Entrada de /
                     Q11();
                     break;
 
-                //Números
+                /*
+                    ***********Entrada para digitos********
+                 */
                 case 48:
                 case 49:
                 case 50:
@@ -95,20 +108,23 @@ public class Lex {
                 case 57:
                     Q4();
                     break;
+
                 case 60:
+                case 62: //Entrada > ou <
                     Q28_Q26();
                     break;
-                case 61:
+
+                case 61: //Entrada =
                     Q23();
                     break;
-                case 62:
-                    Q28_Q26();
-                    break;
-                case 124:
+
+                case 124: //Entrada |
                     Q19();
                     break;
 
-                //Delimitadores
+                /*
+                    ***********Delimitadores********
+                 */
                 case 123:
                 case 125:
                 case 91:
@@ -120,10 +136,12 @@ public class Lex {
                 case 41:
                     Q1();
                     break;
+
                 default: {
                     if (isAlpha(charactere)) {
-                        Q3();
+                        Q3(); // Entrada de Letras
                     } else {
+                        // Valores não especificados 
                         tokens.add(new Token(Token.T.SIB, (char) charactere, position));
                         charactere = read();
                     }
@@ -132,7 +150,7 @@ public class Lex {
         }
     }
 
-    //Estádo final para Delimitadores
+    //Estado final para Delimitadores
     private void Q1() throws IOException {
         buffer = buffer + (char) charactere;
         read();
@@ -141,11 +159,14 @@ public class Lex {
 
     }
 
+    //Estado incial para Identificadores
     private void Q3() throws IOException {
+        //Enquanto for um valor aceito como delimitador continua a formação
         while (isAlpha(charactere) || isNumber(charactere) || charactere == 95) {
             buffer = buffer + (char) charactere;
             read();
         }
+        //Verifica se o identificador formado é uma palavra reservada
         if (listPLE.containsKey(buffer.toLowerCase().hashCode())) {
             tokens.add(new Token(Token.T.PRE, buffer.toLowerCase(), position));
 
@@ -156,22 +177,26 @@ public class Lex {
         buffer = new String();
 
     }
-
+    
+    //Estado incial para Digitos
     private void Q4() throws IOException {
         while (isNumber(charactere)) {
             buffer = buffer + (char) charactere;
             charactere = read();
         }
+        //Se depois do número não for um ponto, então finaliza a formação
         if (charactere != 46) {
             tokens.add(new Token(Token.T.NRO, buffer, position));
             buffer = new String();
-        } else {
-            Q5();
+        } 
+        else {
+            Q5(); //Verifica o resto da formação se ouver ponto depois do número
             buffer = new String();
         }
     }
 
     private void Q5() throws IOException {
+        //inclue o ponto na formação e verificar se há números depois
         buffer = buffer + ((char) charactere);
         charactere = read();
         if (isNumber(charactere)) {
@@ -184,6 +209,7 @@ public class Lex {
         buffer = new String();
     }
 
+    //Forma o operador *
     private void Q6() throws IOException {
         buffer = buffer + ((char) charactere);
         read();
@@ -192,11 +218,12 @@ public class Lex {
 
     }
 
+    //Verifica se a entrada forma apenas um operador + ou um ++
     private void Q7() throws IOException {
         buffer = buffer + (char) charactere;
         charactere = read();
         if (charactere == 43) {
-            Q8();
+            Q8(); //Se ouver outro +, então passa para o próximo estado aceitavel
         } else {
             tokens.add(new Token(Token.T.ART, buffer, position));
             buffer = new String();
@@ -204,6 +231,7 @@ public class Lex {
         }
     }
 
+    //Estado final para ++
     private void Q8() throws IOException {
         buffer = buffer + (char) charactere;
         tokens.add(new Token(Token.T.ART, buffer, position));
@@ -211,6 +239,7 @@ public class Lex {
         read();
     }
 
+    //Estado inicial para -
     private void Q9() throws IOException {
         buffer = buffer + (char) charactere;
         charactere = read();
@@ -229,17 +258,18 @@ public class Lex {
         read();
     }
 
+    //Estado inicial para /     Verifica se é um operador aritmético ou o inicio de um comentário de linha ou bloco
     private void Q11() throws IOException {
         buffer = buffer + (char) charactere;
         read();
         switch (charactere) {
-            case 42:
+            case 42:    //Se tiver *, então incia a formação do comentário de bloco
                 Q14();
                 break;
-            case 47:
+            case 47: // Se for outro /, então incia a formação do comentário de linha 
                 Q12();
                 break;
-            default:
+            default: //Se não, então é apenas um operador aritmético
                 tokens.add(new Token(Token.T.ART, buffer, position));
                 break;
         }
@@ -247,6 +277,7 @@ public class Lex {
 
     }
 
+    //Forma o comentário de linha
     private void Q12() throws IOException {
         while (charactere != 10 && charactere > 0) {
             buffer = buffer + (char) charactere;
@@ -254,43 +285,46 @@ public class Lex {
         }
     }
 
+    //Formação de comentário de bloco
     private void Q14() throws IOException {
         buffer = buffer + (char) charactere;
         read();
         //Q15 charactere == 42
-        while (charactere != 42 && charactere > 0) {
+        while (charactere != 42 && charactere > 0) { //Enquanto não encontrar um * ou chegar no final do arquivo
             buffer = buffer + (char) charactere;
             read();
         }
         //Q16 charactere == 47
-        if ((charactere < 0)) {
+        if ((charactere < 0)) {                 //Se chegar no final do arquivo, então o comentário nunca foi fechado
             tokens.add(new Token(Token.T.CoMF, buffer, position));
             buffer = new String();
-        } else {
+        } else {            //Implica que teve um * como entrada, então passa para o próximo estado
             buffer = buffer + (char) charactere;
             Q15();
         }
 
     }
 
+    //Verifica se há um / finalizando o comentário de bloco
     private void Q15() throws IOException {
         read();
-        if (charactere != 47) {
+        if (charactere != 47) { //Se não houver um / em seguida, então retorna para o estado anterior
             Q14();
-        } else {
+        } else { //Conclui a formação de um comentário de bloco
             read();
             buffer = new String();
         }
     }
 
+    //Verifica os número que há depois do ponto 
     private void Q17() throws IOException {
         boolean hasNumber = false;
-        while (charactere >= 0 && isNumber(charactere)) {
+        while (charactere >= 0 && isNumber(charactere)) { //Enquanto houver número ou não finalizar o arquivo
             buffer = buffer + ((char) charactere);
             hasNumber = true;
             charactere = read();
         }
-        if (hasNumber) {
+        if (hasNumber) { //Se  já houve um número após o ponto, então finaliza em um estado de aceitação
             tokens.add(new Token(Token.T.NRO, buffer, position));
         } else {
             tokens.add(new Token(Token.T.NMF, buffer, position));
@@ -298,6 +332,7 @@ public class Lex {
 
     }
 
+    //Verifica se há a formação de um ! ou !=
     private void Q18() throws IOException {
         buffer = buffer + (char) charactere;
 
@@ -311,19 +346,21 @@ public class Lex {
 
     }
 
+    //Verifica se a formação de ||
     private void Q19() throws IOException {
         buffer = buffer + (char) charactere;
 
         read();
         if (charactere == 124) {
             Q20_Q22();
-        } else {
+        } else { //Se não houver outro | em seguida, então finaliza em um estado não final
             tokens.add(new Token(Token.T.OpMF, buffer, position));
         }
         buffer = new String();
 
     }
 
+    //Estado final para && e ||
     private void Q20_Q22() throws IOException {
         buffer = buffer + (char) charactere;
         tokens.add(new Token(Token.T.LOG, buffer, position));
@@ -331,6 +368,7 @@ public class Lex {
 
     }
 
+    // Verifica a formação de &
     private void Q21() throws IOException {
         buffer = buffer + (char) charactere;
 
@@ -344,6 +382,7 @@ public class Lex {
 
     }
 
+    //Verifica a formação do = ou ==
     private void Q23() throws IOException {
         buffer = buffer + (char) charactere;
 
@@ -357,13 +396,14 @@ public class Lex {
 
     }
 
-    //Q24
+    //Estado para entrada de = após outro operador relacional 
     private void Q29_Q27_Q25_Q24() throws IOException {
         buffer = buffer + (char) charactere;
         tokens.add(new Token(Token.T.REL, buffer, position));
         read();
     }
 
+    //Verifica a formação do > ou < ou <= ou >=
     private void Q28_Q26() throws IOException {
         buffer = buffer + (char) charactere;
 
@@ -377,6 +417,7 @@ public class Lex {
         read();
     }
 
+    //Estado inicial da cadeia de caracteres
     private void Q30() throws IOException {
         buffer = buffer + (char) charactere;
         read();
@@ -392,36 +433,39 @@ public class Lex {
 
     }
 
+    //Verifica se há um \
     private void Q31() throws IOException {
         buffer = buffer + (char) charactere;
         read();
-        if (charactere == 34) {
+        if (charactere == 34) { //Se for um " após \
             Q33();
-        } else if (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) {
+        } else if (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere)) { //Se for outro valor
             Q32();
         }
 
     }
 
     private void Q32() throws IOException {
+        //Loop para formação de (numero|letra|simbolo)* e muda de estado para o simbolo especial \
         while (isNumber(charactere) || isAlpha(charactere) || isSimbol(charactere) && charactere != 92) {
             buffer = buffer + (char) charactere;
             read();
         }
         switch (charactere) {
-            case 92:
+            case 92: // Se for um \
                 Q31();
                 break;
-            case 34:
+            case 34: //Se for um " finalizando a cadeia
                 Q34();
                 break;
-            default:
+            default: //Implica em uma cadeia má formada
                 CMF();
                 break;
         }
 
     }
 
+    //Estado para a possibilidade de haver \"
     private void Q33() throws IOException {
         buffer = buffer + (char) charactere;
         read();
@@ -434,6 +478,7 @@ public class Lex {
         }
     }
 
+    //Estado final da cadeia de caracteres
     private void Q34() throws IOException {
         buffer = buffer + (char) charactere;
         tokens.add(new Token(Token.T.CAD, buffer, position));
@@ -441,6 +486,7 @@ public class Lex {
         read();
     }
 
+    // Loop para permanecer lendo cadeia má formada
     private void CMF() throws IOException {
         while (charactere != 34 && charactere != 10 && charactere > 0) {
             if (charactere == 92) {
