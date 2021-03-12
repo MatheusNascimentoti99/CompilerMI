@@ -4,7 +4,7 @@ Project of Compiladores' MI
 Passos para execução:
 ```
 1 - git clone https://github.com/MatheusNascimentoti99/CompilerMI.git
-2 - cd CompilerMI
+2 - cd CompilerMI/dist
 3 - java -jar "Compilador.jar"
 ```
 Realizar testes:
