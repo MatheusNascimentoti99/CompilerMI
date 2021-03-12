@@ -45,8 +45,9 @@ public class main {
             //Verificação da localização do diretório de execução
             String pathAbsolute = new File( "." ).getCanonicalPath();
             boolean endsWith = pathAbsolute.endsWith("dist");
-            Path outputPath = Paths.get(endsWith? "../output": "output/");
+            Path outputPath = Paths.get(endsWith? "..\\output": "output");
             Files.createDirectories(outputPath);
+            System.out.println(outputPath.toAbsolutePath());
             fileInput = new File(endsWith ? "../input": "input");
             
             
@@ -68,14 +69,14 @@ public class main {
 
                             Matcher numberEndFile = patternEndFile.matcher(path.getName());
                             numberEndFile.find();
-                            try (FileWriter arqOutput = new FileWriter(outputPath.toString() + "/saida" + numberEndFile.group() + ".txt")) {
+                            try (FileWriter arqOutput = new FileWriter(outputPath.toString() + "\\saida" + numberEndFile.group() + ".txt")) {
                                 PrintWriter gravarArq = new PrintWriter(arqOutput);
                                 lex.createListTokens();
                                 gravarArq.print(lex.toString());
                                 System.out.println("Criado output: saida" + numberEndFile.group() + ".txt");
                                 System.out.println(lex.hasErros() ? "Arquivo possue erros\n" : "Arquivo analisado sem erros\n");
                             } catch (IOException e) {
-                                System.err.println("Não foi possível criar o arquivo " + outputPath.toString() + "/saida" + numberEndFile.group() + ".txt");
+                                System.err.println("Não foi possível criar o arquivo " + outputPath.toString() + "\\saida" + numberEndFile.group() + ".txt");
                             }
 
                         } catch (IOException e) {

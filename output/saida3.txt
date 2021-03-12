@@ -10,7 +10,7 @@
 3 IDE scanner
 3 DEL )
 3 DEL ;
-4 CMF "verificando se h erro aqui"
+4 CMF "verificando se h¡ erro aqui"
 9 PRE if
 9 DEL (
 9 IDE scanner
