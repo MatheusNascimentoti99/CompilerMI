@@ -1,0 +1,35 @@
+1 PRE int
+1 IDE scanner
+2 PRE print
+2 DEL (
+2 CMF "Digita algo,); //Print errado
+3 IDE scanf
+3 DEL (
+3 CAD "%d"
+3 DEL ,
+3 IDE scanner
+3 DEL )
+3 DEL ;
+4 CMF "verificando se h erro aqui"
+9 PRE if
+9 DEL (
+9 IDE scanner
+9 REL >
+9 NRO 5
+9 OpMF &
+9 IDE scanner
+9 REL !=
+9 NRO 7
+9 LOG ||
+9 IDE scanner
+9 REL !=
+9 NRO 9
+9 LOG &&
+9 IDE scanner
+9 ART 2
+9 NRO 2
+9 REL ==
+9 NRO 30
+9 DEL )
+12 CoMF /* algo 
+

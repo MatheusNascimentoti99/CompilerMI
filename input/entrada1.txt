@@ -1,0 +1,53 @@
+var const typedef struct extends procedure function start return if else then while read print int real boolean string true false global local
+
+var1 const1 typedef1 struct1 extends1 procedure1 function1 start1 return1 if1 else1 then1 while1 read1 print1 int1 real1 boolean1 string1 true1 false1 global1 local1
+
+var! const% typedef# struct@ extends@ procedure@ function@ start@ return@ if@ else@ then@ while@ read@ print@ int@ real@ boolean@ string@ true@ false@ global@ local@
+
+1var1_ 1const1_ 1typedef1_ 1struct1_ 1extends1_ 1procedure1_ 1function1_ 1start1_ 1return1_ 1if1_ 1else1_ 1then1_ 1while1_ 1read1_ 1print1_ 1int1_ 1real1_ 1boolean1_ 1string1_ 1true1_ 1false1_ 1global1_ 1local1_
+
+0 1 2 3 4 5 6 7 8 9
+
+0.0 1.1 2.2 3.3 4.4 5.5 6.6 7.7 8.8 9.9
+
+0..0 0.0.0. 0.a 0.0.a
+
++ - * / ++ --
+
+= == < <= > >= !=
+
+&& || ! & |
+
+/*adfuioUIO*&*!@73
+ *
+ */
+
+//39943KJIUDOIDuiweuidas&^!&6283109302
+
+; , ( ) { } [ ] .
+
+"ioero8739\"1&^!^*@(* \""
+
+"fdfa1289389
+
+"fdfa1289389\"
+
+"fdfa1289389\" "
+
+/*adfuioUIO*&*!@73
+ *
+ *
+
+    //39943KJIUDOIDuiweuidas&^!&6283109302
+
+    ; , ( ) { } [ ] .
+
+    "ioero8739\"1&^!^*@(* \""
+
+    "fdfa1289389
+
+    "fdfa1289389\"
+
+    "fdfa1289389\""
+
+*

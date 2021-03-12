@@ -17,6 +17,7 @@ import java.util.LinkedList;
  */
 public class Lex {
 
+    boolean hasErrors;
     Reader input;
     LinkedList<Token> tokens;
     int charactere = 0;
@@ -26,6 +27,7 @@ public class Lex {
     HashMap<Integer, String> listPLE;
 
     public Lex(Reader input) throws IOException {
+        hasErrors = false;
         this.input = input;
         listPLE = new HashMap<>();
         for (String PLE1 : PLE) {
@@ -142,6 +144,7 @@ public class Lex {
                         Q3(); // Entrada de Letras
                     } else {
                         // Valores não especificados 
+                        hasErrors = true;
                         tokens.add(new Token(Token.T.SIB, (char) charactere, position));
                         charactere = read();
                     }
@@ -177,7 +180,7 @@ public class Lex {
         buffer = new String();
 
     }
-    
+
     //Estado incial para Digitos
     private void Q4() throws IOException {
         while (isNumber(charactere)) {
@@ -188,8 +191,7 @@ public class Lex {
         if (charactere != 46) {
             tokens.add(new Token(Token.T.NRO, buffer, position));
             buffer = new String();
-        } 
-        else {
+        } else {
             Q5(); //Verifica o resto da formação se ouver ponto depois do número
             buffer = new String();
         }
@@ -203,6 +205,7 @@ public class Lex {
             Q17();
             buffer = new String();
         } else {
+            hasErrors = true;
             tokens.add(new Token(Token.T.NMF, buffer, position));
             buffer = new String();
         }
@@ -296,6 +299,7 @@ public class Lex {
         }
         //Q16 charactere == 47
         if ((charactere < 0)) {                 //Se chegar no final do arquivo, então o comentário nunca foi fechado
+            hasErrors = true;
             tokens.add(new Token(Token.T.CoMF, buffer, position));
             buffer = new String();
         } else {            //Implica que teve um * como entrada, então passa para o próximo estado
@@ -327,6 +331,7 @@ public class Lex {
         if (hasNumber) { //Se  já houve um número após o ponto, então finaliza em um estado de aceitação
             tokens.add(new Token(Token.T.NRO, buffer, position));
         } else {
+            hasErrors = true;
             tokens.add(new Token(Token.T.NMF, buffer, position));
         }
 
@@ -354,6 +359,7 @@ public class Lex {
         if (charactere == 124) {
             Q20_Q22();
         } else { //Se não houver outro | em seguida, então finaliza em um estado não final
+            hasErrors = true;
             tokens.add(new Token(Token.T.OpMF, buffer, position));
         }
         buffer = new String();
@@ -376,6 +382,7 @@ public class Lex {
         if (charactere == 38) {
             Q20_Q22();
         } else {
+            hasErrors = true;
             tokens.add(new Token(Token.T.OpMF, buffer, position));
         }
         buffer = new String();
@@ -499,6 +506,7 @@ public class Lex {
             }
 
         }
+        hasErrors = true;
         tokens.add(new Token(Token.T.CMF, buffer, position));
         buffer = new String();
         read();
@@ -514,6 +522,10 @@ public class Lex {
 
     private boolean isSimbol(int charactere) {
         return (charactere >= 32 && charactere <= 126 && charactere != 34);
+    }
+
+    public boolean hasErros() {
+        return hasErrors;
     }
 
     @Override

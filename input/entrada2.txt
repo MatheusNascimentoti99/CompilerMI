@@ -1,0 +1,64 @@
+/*
+ * Calcula e mostra a área e o comprimento
+ * de uma circunferência a partir do raio;
+ */
+
+global const real PI = 3..1415;
+
+//Agrupa os parâmentros
+typedef struct {
+	local var real radius;
+	local var real area;
+	local var real length;
+} circle;
+
+//Calcula a área
+real function area(real radius) {
+	local var real result = PI * radius * radius;
+	return result;
+}
+
+//Calcula o comprimento
+real function length(real radius) {
+	local var real result = 2 * PI * radius;
+	return result;
+}
+
+//Mostra os parâmentros
+procedure show(circle c) {
+	print("Radius: ");@
+	print(c.radius);
+	print("\n");
+
+	print("Area: ");
+	print(c.area);
+	print("\n");
+
+	print("Length: ");
+	print(c.length);
+	print("\n");
+}
+
+//Receber o valor do raio
+local var circle;
+
+local var real radius = 0;
+local string exit = "n"
+
+
+while (exit != "y") {
+
+	radius = (real)read("Insira o valor do raio: ");
+
+	if (radius > 0) then {
+		circle.radius = radius;
+		circle.area   = area(radius);
+		circle.length = length(radius);
+
+		show(circle);
+	} else {
+		print("O Raio deve ser maior que zero\n");
+	}
+
+	exit = read("Sair[y]: );
+}

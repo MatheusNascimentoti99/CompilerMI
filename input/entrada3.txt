@@ -1,0 +1,11 @@
+int scanner
+Print("Digita algo,); //Print errado
+scanf("%d", scanner);
+"verificando se há erro aqui"
+/* Teste de operadores relacionais
+* Teste de aperadores lógicos também	
+* Vai pegar um erro nessa expressão
+*/
+if (scanner > 5 & scanner != 7 || scanner != 9 && scanner*2 == 30)
+// teste para verificar se há erro em comentário de linha
+/* algo 
