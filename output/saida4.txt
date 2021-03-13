@@ -280,7 +280,7 @@
 49 IDE multiplicacao
 49 REL =
 49 IDE primeiro
-49 ART s
+49 ART *
 49 IDE segundo
 49 DEL ;
 50 IDE printf
@@ -368,7 +368,7 @@
 63 DEL )
 63 DEL {
 64 IDE fat
-64 ART =
+64 ART *
 64 REL =
 64 IDE primeiro
 64 DEL ;
@@ -423,7 +423,7 @@
 74 ART /
 74 NRO 100
 74 DEL )
-74 ART s
+74 ART *
 74 IDE segundo
 74 DEL ;
 75 IDE printf

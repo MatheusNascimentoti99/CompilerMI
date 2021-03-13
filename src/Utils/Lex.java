@@ -216,7 +216,7 @@ public class Lex {
     private void Q6() throws IOException {
         buffer = buffer + ((char) charactere);
         read();
-        tokens.add(new Token(Token.T.ART, (char) charactere, position));
+        tokens.add(new Token(Token.T.ART, buffer, position));
         buffer = new String();
 
     }

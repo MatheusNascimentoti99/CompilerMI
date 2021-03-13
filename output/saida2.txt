@@ -42,9 +42,9 @@
 17 IDE result
 17 REL =
 17 IDE PI
-17 ART  
+17 ART *
 17 IDE radius
-17 ART  
+17 ART *
 17 IDE radius
 17 DEL ;
 18 PRE return
@@ -65,9 +65,9 @@
 23 IDE result
 23 REL =
 23 NRO 2
-23 ART  
+23 ART *
 23 IDE PI
-23 ART  
+23 ART *
 23 IDE radius
 23 DEL ;
 24 PRE return

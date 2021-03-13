@@ -1,8 +1,17 @@
-int scanner
-scanf("%d", scanner);
+int scan;
+usuario = "Matheus"
+print("Hey, " + usuario + "digite um número");
+scanf("%d", &scan);
 /* Teste de operadores relacionais
 * Teste de aperadores lógicos também	
 * Vai pegar um erro nessa expressão
 */
-if (scanner > 5 && scanner != 7 || scanner != 9 && scanner*2 == 30)
+if (scan > 5 && scan <= 7 | scan/2 != 3 && scan*2 == 14){
 // teste para verificar se há erro em comentário de linha
+	print("Voce digitou 6");
+}
+scan= 15
+scan+1 = 1
+/*
+
+Tentando fazer algo aqui

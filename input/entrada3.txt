@@ -1,3 +1,5 @@
+"Casa \"amarela\" sem porta"
+
 int scanner
 Print("Digita algo,); //Print errado
 scanf("%d", scanner);
