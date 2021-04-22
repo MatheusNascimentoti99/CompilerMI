@@ -11,9 +11,13 @@ public class Token {
     public Object val;
     public int line;
     public int col;
+    public boolean isError;
 
     public Token(T type, int[] position) {
         this.type = type;
+        if (type == T.CoMF || type == T.SIB || type == T.OpMF || type == T.NMF || type == T.CMF) {
+            isError = true;
+        }
         this.line = position[0];
         this.col = position[1];
     }

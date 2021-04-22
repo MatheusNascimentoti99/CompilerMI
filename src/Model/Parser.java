@@ -18,16 +18,15 @@ public class Parser {
     private Token nextToken;
     private LinkedList<String> result;
 
-    
     public Parser(LinkedList<Token> tokens) {
         this.tokens = tokens;
         correntToken = tokens.pollFirst();
         nextToken = tokens.pollFirst();
         result = new LinkedList<>();
     }
-    
-    public String getResult(){
-        return result.toString();
+
+    public LinkedList<String> getResult() {
+        return result;
     }
 
     public Token seeNextToken() {
@@ -39,14 +38,22 @@ public class Parser {
     }
 
     public Token goNextToken() {
-        result.push(correntToken.toString());
+        if (!correntToken.isError) {
+            result.push(correntToken.toString());
+        } else {
+            result.push(correntToken.toString());
+        }
         correntToken = nextToken;
         nextToken = tokens.pollFirst();
         return correntToken;
     }
-    
-    public void includeError(String expected){
-        result.push("\n"+correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected+ "'");
+
+    public void includeError(String expected) {
+        if (!correntToken.isError) {
+            result.push("\n" + correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected + "'");
+        } else {
+            result.push(correntToken.toString());
+        }
     }
 
     public Token.T typeNextToken() {

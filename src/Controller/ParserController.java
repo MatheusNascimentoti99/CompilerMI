@@ -25,9 +25,16 @@ public class ParserController {
         parse = new Parser(tokens);
     }
 
+
     @Override
     public String toString() {
-        return parse.getResult();
+        StringBuilder result = new StringBuilder();
+        parse.getResult().forEach((info) -> {
+            result.append(info).append("\n");
+        });
+        result.append("\n\n-------------------------\n\n");
+
+        return result.toString();
     }
 
     public void startSymbol() {
@@ -273,9 +280,9 @@ public class ParserController {
             parse.includeError("}, =");
         }
     }
-    
-    private void proc_block(){
-        
+
+    private void proc_block() {
+
     }
 
     private void decl_atribute() {
