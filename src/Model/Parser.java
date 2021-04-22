@@ -13,14 +13,21 @@ import java.util.LinkedList;
  */
 public class Parser {
 
-    private LinkedList<Token> tokens;
+    private final LinkedList<Token> tokens;
     private Token correntToken;
     private Token nextToken;
+    private LinkedList<String> result;
 
+    
     public Parser(LinkedList<Token> tokens) {
         this.tokens = tokens;
         correntToken = tokens.pollFirst();
         nextToken = tokens.pollFirst();
+        result = new LinkedList<>();
+    }
+    
+    public String getResult(){
+        return result.toString();
     }
 
     public Token seeNextToken() {
@@ -32,9 +39,14 @@ public class Parser {
     }
 
     public Token goNextToken() {
+        result.push(correntToken.toString());
         correntToken = nextToken;
         nextToken = tokens.pollFirst();
         return correntToken;
+    }
+    
+    public void includeError(String expected){
+        result.push("\n"+correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected+ "'");
     }
 
     public Token.T typeNextToken() {

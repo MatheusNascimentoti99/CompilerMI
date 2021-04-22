@@ -1,7 +1,16 @@
-struct teste extends struct rest{ 
+struct Pessoa{
 	const{
-		Pessoa p, p2;
-		int a[4+2]={1,6,6};
-		real b=2/3 + 45 > 0;
+		int a = (1/(2+3));
+		real be = 12 / 34;
 	}
 }
+
+const{
+	int a = (1/(2+3));
+	real be = 12 / 34;
+}
+var{
+	int a;
+	real be;
+}
+

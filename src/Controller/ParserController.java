@@ -25,11 +25,16 @@ public class ParserController {
         parse = new Parser(tokens);
     }
 
+    @Override
+    public String toString() {
+        return parse.getResult();
+    }
+
     public void startSymbol() {
         try {
             program();
         } catch (NullPointerException e) {
-            System.out.println("Esperava fechamento de chaves");
+            System.out.println("Faltando dados");
         }
     }
 
@@ -38,10 +43,29 @@ public class ParserController {
             parse.goNextToken();
             structs();
         }
-//        const_block();
-//        var_block();
-//        start_block();
-//        decls();
+        if (parse.getCorrentToken().val.equals("const")) {
+            const_block();
+        }
+        if (parse.getCorrentToken().val.equals("var")) {
+            var_block();
+        }
+    }
+
+    private void start_block() {
+        if (parse.getCorrentToken().equals("procedure")) {
+            parse.goNextToken();
+            if (parse.getCorrentToken().equals("start")) {
+                if (parse.getCorrentToken().equals("(")) {
+                    if (parse.getCorrentToken().equals(")")) {
+                        proc_block();
+                    } else {
+                        parse.includeError(")");
+                    }
+                }
+            } else {
+                parse.includeError("start");
+            }
+        }
     }
 
     private void structs() {
@@ -60,10 +84,12 @@ public class ParserController {
                 const_block();
                 var_block();
                 if (!parse.getCorrentToken().val.equals("}")) {
-                    System.out.println("Esperava fechar chaves");
+                    parse.includeError("}");
+                } else {
+                    parse.goNextToken();
                 }
             } else {
-                System.out.println("Esperava abrir chaves");
+                parse.includeError("{");
             }
         }
     }
@@ -72,13 +98,14 @@ public class ParserController {
         if (parse.getCorrentToken().val.equals("extends")) {
             parse.goNextToken();
             if (!parse.getCorrentToken().val.equals("struct")) {
-                System.out.println("esperava struct");
+                parse.includeError("struct");
+
             } else {
                 parse.goNextToken();
                 if (parse.getCorrentToken().type == Token.T.IDE) {
                     parse.goNextToken();
                 } else {
-                    System.out.println("Espereva identificador");
+                    parse.includeError("IDE");
                 }
             }
         }
@@ -91,12 +118,12 @@ public class ParserController {
                 parse.goNextToken();
                 const_decls();
                 if (!parse.getCorrentToken().val.equals("}")) {
-                    System.out.println("Esperava fechar chaves");
+                    parse.includeError("}");
                 } else {
                     parse.goNextToken();
                 }
             } else {
-                System.out.println("Esperava abrir chaves");
+                parse.includeError("{");
             }
         }
 
@@ -109,12 +136,13 @@ public class ParserController {
                 parse.goNextToken();
                 var_decls();
                 if (!parse.getCorrentToken().val.equals("}")) {
-                    System.out.println("Esperava fechar chaves");
+                    parse.includeError("}");
+
                 } else {
                     parse.goNextToken();
                 }
             } else {
-                System.out.println("Esperava abrir chaves");
+                parse.includeError("{");
             }
         }
 
@@ -132,11 +160,11 @@ public class ParserController {
     }
 
     private void var_decls() {
-        var_decl();
         if (parse.getCorrentToken().type == Token.T.IDE || types.contains(parse.getCorrentToken().val)
                 || parse.getCorrentToken().val.equals("typedef")
                 || parse.getCorrentToken().val.equals("local")
                 || parse.getCorrentToken().val.equals("global")) {
+            var_decl();
             var_decls();
         }
     }
@@ -161,7 +189,8 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals(";")) {
                 parse.goNextToken();
             } else {
-                System.out.println("Esperava ;");
+                parse.includeError(";");
+
             }
         } else if (parse.getCorrentToken().val.equals("typedef")) {
             typedef();
@@ -174,7 +203,7 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals("struct")) {
                 parse.goNextToken();
                 if (parse.getCorrentToken().type != Token.T.IDE) {
-                    System.out.println("Esperava um identificador");
+                    parse.includeError("IDE");
                 } else {
                     parse.goNextToken();
                 }
@@ -193,17 +222,17 @@ public class ParserController {
                 if (parse.getCorrentToken().val.equals(";")) {
                     parse.goNextToken();
                 } else {
-                    System.out.println("Esperava ';'");
+                    parse.includeError(";");
                 }
             } else {
-                System.out.println("Esperava um Identificador");
+                parse.includeError("IDE");
             }
         }
     }
 
     private void var_() {
         if (parse.getCorrentToken().type != Token.T.IDE) {
-            System.out.println("Esperava um identificador");
+            parse.includeError("IDE");
         } else {
             parse.goNextToken();
             arrays();
@@ -220,7 +249,7 @@ public class ParserController {
 
     private void const_() {
         if (parse.getCorrentToken().type != Token.T.IDE) {
-            System.out.println("Esperava um identificador");
+            parse.includeError("IDE");
         } else {
             parse.goNextToken();
             arrays();
@@ -238,11 +267,15 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals(";")) {
                 parse.goNextToken();
             } else {
-                System.out.println("Esperado um ';'");
+                parse.includeError(";");
             }
         } else {
-            System.out.println("Esperado um ',' ou '='");
+            parse.includeError("}, =");
         }
+    }
+    
+    private void proc_block(){
+        
     }
 
     private void decl_atribute() {
@@ -255,6 +288,8 @@ public class ParserController {
                 || parse.getCorrentToken().val.equals("!")
                 || parse.getCorrentToken().val.equals("(")) {
             expr();
+        } else {
+            parse.includeError("{, (, NRO, IDE, CAD");
         }
 
     }
@@ -312,14 +347,7 @@ public class ParserController {
     }
 
     private void expr() {
-        if (parse.getCorrentToken().type == Token.T.LOG
-                || parse.getCorrentToken().type == Token.T.IDE
-                || parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().type == Token.T.CAD
-                || parse.getCorrentToken().val.equals("!")
-                || parse.getCorrentToken().val.equals("(")) {
-            or();
-        }
+        or();
     }
 
     private void or() {
@@ -380,7 +408,8 @@ public class ParserController {
     }
 
     private void add_() {
-        if (parse.getCorrentToken().val.equals("+") || parse.getCorrentToken().val.equals("-")) {
+        if (parse.getCorrentToken().val.equals("+")
+                || parse.getCorrentToken().val.equals("-")) {
             parse.goNextToken();
             mult();
             add_();
@@ -424,8 +453,13 @@ public class ParserController {
         } else if (parse.getCorrentToken().val.equals("(")) {
             parse.goNextToken();
             expr();
+            if (parse.getCorrentToken().val.equals(")")) {
+                parse.goNextToken();
+            } else {
+                parse.includeError(")");
+            }
         } else {
-            System.out.println("Esperado log, string, número, local, global, IDE, ou (");
+            parse.includeError("LOG, CAD, NRO, 'local, 'global', IDE, (");
         }
     }
 
@@ -440,9 +474,11 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals(")")) {
                 parse.goNextToken();
             } else {
-                System.out.println("Esperava )");
+                parse.includeError(")");
             }
         } else {
+            parse.includeError("[, ., (");
+
             System.out.println("Esperava '[', '.' ou '('");
         }
     }
@@ -475,7 +511,7 @@ public class ParserController {
                 arrays();
             }
         } else {
-            System.out.println("Esperava um '.'");
+            parse.includeError(".");
         }
     }
 
