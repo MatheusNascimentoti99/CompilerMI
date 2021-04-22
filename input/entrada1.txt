@@ -1,0 +1,7 @@
+struct teste extends struct rest{ 
+	const{
+		Pessoa p, p2;
+		int a[4+2]={1,6,6};
+		real b=2/3 + 45 > 0;
+	}
+}

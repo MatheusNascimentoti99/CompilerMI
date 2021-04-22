@@ -1,0 +1,47 @@
+1 PRE struct
+1 IDE teste
+1 PRE extends
+1 PRE struct
+1 IDE rest
+1 DEL {
+2 PRE const
+2 DEL {
+3 IDE Pessoa
+3 IDE p
+3 DEL ,
+3 IDE p2
+3 DEL ;
+4 PRE int
+4 IDE a
+4 DEL [
+4 NRO 4
+4 ART +
+4 NRO 2
+4 DEL ]
+4 REL =
+4 DEL {
+4 NRO 1
+4 DEL ,
+4 NRO 6
+4 DEL ,
+4 NRO 6
+4 DEL }
+4 DEL ;
+5 PRE real
+5 IDE b
+5 REL =
+5 NRO 2
+5 ART /
+5 NRO 3
+5 ART +
+5 NRO 45
+5 REL >
+5 NRO 0
+5 DEL ;
+6 DEL }
+7 DEL }
+
+
+-------------------------
+
+Arquivo analisado com sucesso!
