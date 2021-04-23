@@ -38,9 +38,7 @@ public class Parser {
     }
 
     public Token goNextToken() {
-        if (!correntToken.isError) {
-            result.push(correntToken.toString());
-        } else {
+        if (!correntToken.isError()) {
             result.push(correntToken.toString());
         }
         correntToken = nextToken;
@@ -48,12 +46,10 @@ public class Parser {
         return correntToken;
     }
 
+
     public void includeError(String expected) {
-        if (!correntToken.isError) {
-            result.push("\n" + correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected + "'");
-        } else {
-            result.push(correntToken.toString());
-        }
+        result.push("\n" + correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected + "'");
+        goNextToken();
     }
 
     public Token.T typeNextToken() {

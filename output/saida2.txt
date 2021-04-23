@@ -12,6 +12,7 @@
 8 PRE real
 8 IDE numero_real2
 8 DEL ;
+9 DEL }
 11 PRE start
 12 DEL {
 14 IDE inteiro

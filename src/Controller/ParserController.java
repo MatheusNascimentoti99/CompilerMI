@@ -25,7 +25,6 @@ public class ParserController {
         parse = new Parser(tokens);
     }
 
-
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -291,6 +290,7 @@ public class ParserController {
         } else if (parse.getCorrentToken().type == Token.T.LOG
                 || parse.getCorrentToken().type == Token.T.IDE
                 || parse.getCorrentToken().type == Token.T.NRO
+                || parse.getCorrentToken().type == Token.T.ART
                 || parse.getCorrentToken().type == Token.T.CAD
                 || parse.getCorrentToken().val.equals("!")
                 || parse.getCorrentToken().val.equals("(")) {
@@ -302,8 +302,8 @@ public class ParserController {
     }
 
     private void arrays() {
-        array();
         if (parse.getCorrentToken().val.equals("[")) {
+            array();
             arrays();
         }
     }
@@ -320,7 +320,15 @@ public class ParserController {
 //incompleta
 
     private void index() {
-        expr();
+        if (parse.getCorrentToken().type == Token.T.LOG
+                || parse.getCorrentToken().type == Token.T.IDE
+                || parse.getCorrentToken().type == Token.T.ART
+                || parse.getCorrentToken().type == Token.T.NRO
+                || parse.getCorrentToken().type == Token.T.CAD
+                || parse.getCorrentToken().val.equals("!")
+                || parse.getCorrentToken().val.equals("(")) {
+            expr();
+        }
     }
 
     private void array_decl() {
@@ -330,6 +338,8 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals("}")) {
                 parse.goNextToken();
                 array_vector();
+            }else{
+                parse.includeError("}, ,");
             }
         }
     }
@@ -483,11 +493,7 @@ public class ParserController {
             } else {
                 parse.includeError(")");
             }
-        } else {
-            parse.includeError("[, ., (");
-
-            System.out.println("Esperava '[', '.' ou '('");
-        }
+        } 
     }
 
     private void args() {
@@ -495,6 +501,7 @@ public class ParserController {
                 || parse.getCorrentToken().type == Token.T.IDE
                 || parse.getCorrentToken().type == Token.T.NRO
                 || parse.getCorrentToken().type == Token.T.CAD
+                || parse.getCorrentToken().type == Token.T.ART
                 || parse.getCorrentToken().val.equals("!")
                 || parse.getCorrentToken().val.equals("(")) {
             expr();

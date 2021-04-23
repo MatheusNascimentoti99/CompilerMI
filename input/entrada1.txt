@@ -1,16 +1,7 @@
-struct Pessoa{
-	const{
-		int a = (1/(2+3));
-		real be = 12 / 34;
-	}
-}
-
 const
 {
-	string nome = "nome proprio ";
-	string palavra = "";
-	string palavra2 = " ";
-	string sobrenome = " sobre";
-	tutores f = 3;
-
+	int a = 5/5*2;
+}
+var{
+	int a;
 }
