@@ -25,6 +25,10 @@ public class Parser {
         result = new LinkedList<>();
     }
 
+    public LinkedList<Token> getTokens() {
+        return tokens;
+    }
+
     public LinkedList<String> getResult() {
         return result;
     }
@@ -46,10 +50,18 @@ public class Parser {
         return correntToken;
     }
 
+    public Token goNextToken(boolean include) {
+        if (!correntToken.isError() && include) {
+            result.push(correntToken.toString());
+        }
+        correntToken = nextToken;
+        nextToken = tokens.pollFirst();
+        return correntToken;
+    }
 
     public void includeError(String expected) {
         result.push("\n" + correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected + "'");
-        goNextToken();
+        //goNextToken(false);
     }
 
     public Token.T typeNextToken() {

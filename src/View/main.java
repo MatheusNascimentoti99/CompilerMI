@@ -81,9 +81,11 @@ public class main {
                                 System.out.println("Arquivo analisado: " + path.getName());
                                 System.out.println("Output criado: saida" + numberEndFile.group() + ".txt");
                                 System.out.println(lex.hasErros() ? "Arquivo contém erros\n" : "Sucesso! Arquivo não contém erros \n");
-                                ParserController parser = new ParserController(lex.getTokens());
-                                parser.startSymbol();
-                                System.out.println(parser.toString());
+                                if (!lex.hasErros()) {
+                                    ParserController parser = new ParserController(lex.getTokens());
+                                    parser.startSymbol();
+                                    System.out.println(parser.toString());
+                                }
                             } catch (IOException e) {
                                 System.err.println("Não foi possível criar o arquivo " + outputPath.toString() + "\\saida" + numberEndFile.group() + ".txt");
                             }

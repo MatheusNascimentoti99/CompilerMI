@@ -254,7 +254,6 @@ public final class Lex {
         }
     }
 
-
     //Estado inicial para /     Verifica se é um operador aritmético ou o inicio de um comentário de linha ou bloco
     private void Q11() throws IOException {
         buffer = buffer + (char) charactere;
@@ -415,9 +414,9 @@ public final class Lex {
             Q29_Q27_Q25_Q24();
         } else {
             tokens.add(new Token(Token.T.REL, buffer, position));
-            buffer = new String();
-
         }
+        buffer = new String();
+
     }
 
     //Estado inicial da cadeia de caracteres
@@ -494,7 +493,7 @@ public final class Lex {
         while (charactere != 34 && charactere != 10 && charactere > 0) {
             if (charactere == 92) {
                 buffer = buffer + (char) charactere;
-            } else { 
+            } else {
                 if (charactere != 10) {
                     buffer = buffer + (char) charactere;
                 }
@@ -535,8 +534,8 @@ public final class Lex {
 
         return result.toString();
     }
-    
-    public LinkedList<Token> getTokens(){
+
+    public LinkedList<Token> getTokens() {
         return tokens;
     }
 

@@ -1,7 +1,32 @@
-const
-{
-	int a = 5/5*2;
+// Arquivo de Entrada
+const {
+		real a = d;
 }
-var{
+	
+var
+{
+	int inteiro, f, g ;
 	int a;
+	real numero_real;
+	real numero_real2;
+}
+
+procedure start()
+{
+	var
+	{
+		int inteiro, f, g;
+	}
+	if() {
+		if()then{
+			while(){}
+		} {
+			return 0;
+		}
+	}
+	else if(){
+	}
+	else{
+
+	}	
 }
