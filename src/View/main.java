@@ -6,7 +6,7 @@
 package View;
 
 import Controller.ParserController;
-import Utils.Lex;
+import Controller.LexController;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -70,7 +70,7 @@ public class main {
                             //Prepara o primeiro arquivo para leitura
                             Reader input = new FileReader(path);
                             //Cria a analise léxica para o arquivo atual
-                            Lex lex = new Lex(input);
+                            LexController lex = new LexController(input);
 
                             //Verificar número do arquivo
                             Matcher numberEndFile = patternEndFile.matcher(path.getName());

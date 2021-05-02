@@ -5,7 +5,7 @@ import java.util.Formatter;
 public class Token {
 
     public enum T {
-        PRE, IDE, NRO, LOG, ART, REL, DEL, CAD, CoMF, EOF, SIB, OpMF, NMF, CMF
+        PRE, IDE, NRO, LOG, ART, REL, DEL, CAD, CoMF, EOF, SIB, OpMF, NMF, CMF, Parser
     };
     public T type;
     public Object val;
@@ -30,6 +30,12 @@ public class Token {
         this.val = val;
         this.line = position[0];
         this.col = position[1];
+    }
+    public Token(T type, Object val, int positionLine) {
+        this.type = type;
+        this.val = val;
+        this.line = positionLine;
+        this.col = 0;
     }
 
     @Override

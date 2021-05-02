@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Utils;
+package Controller;
 
 import Model.Token;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.util.LinkedList;
  *
  * @author Matheus Nascimento
  */
-public final class Lex {
+public final class LexController {
 
     int errors;
     Reader input;
@@ -26,7 +26,7 @@ public final class Lex {
     String[] PLE = {"var", "const", "typedef", "struct", "extends", "procedure", "function", "start", "return", "if", "else", "then", "while", "read", "print", "int", "real", "boolean", "string", "true", "false", "global", "local"};
     HashMap<Integer, String> listPLE;
 
-    public Lex(Reader input) throws IOException {
+    public LexController(Reader input) throws IOException {
         errors = 0;
         this.input = input;
         listPLE = new HashMap<>();

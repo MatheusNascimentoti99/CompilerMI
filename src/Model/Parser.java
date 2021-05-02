@@ -6,6 +6,7 @@
 package Model;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -16,7 +17,7 @@ public class Parser {
     private final LinkedList<Token> tokens;
     private Token correntToken;
     private Token nextToken;
-    private LinkedList<String> result;
+    private final LinkedList<TokenAfterParse> result;
 
     public Parser(LinkedList<Token> tokens) {
         this.tokens = tokens;
@@ -29,7 +30,7 @@ public class Parser {
         return tokens;
     }
 
-    public LinkedList<String> getResult() {
+    public LinkedList<TokenAfterParse> getResult() {
         return result;
     }
 
@@ -38,30 +39,67 @@ public class Parser {
     }
 
     public Token getCorrentToken() {
-        return correntToken;
+        try {
+            if (correntToken == null) {
+                throw new NullPointerException();
+            } else {
+                return correntToken;
+            }
+        } catch (NullPointerException e) {
+            int[] position = {-1, -1};
+            return new Token(Token.T.EOF, "", position);
+        }
     }
 
-    public Token goNextToken() {
-        if (!correntToken.isError()) {
-            result.push(correntToken.toString());
-        }
+    public boolean equalsValue(String expected) {
+        return correntToken.val.equals(expected);
+    }
+
+    public Token nextToken() {
+        result.push(new TokenAfterParse(correntToken));
         correntToken = nextToken;
         nextToken = tokens.pollFirst();
         return correntToken;
     }
 
-    public Token goNextToken(boolean include) {
-        if (!correntToken.isError() && include) {
-            result.push(correntToken.toString());
+    public Token nextToken(boolean include) {
+        if (include) {
+            result.push(new TokenAfterParse(correntToken));
         }
         correntToken = nextToken;
         nextToken = tokens.pollFirst();
+
         return correntToken;
     }
 
     public void includeError(String expected) {
-        result.push("\n" + correntToken.line + "  Token recebido: '" + this.correntToken.val.toString() + "' . Tokens esperados: '" + expected + "'");
-        //goNextToken(false);
+        try {
+            result.push(new TokenAfterParse(correntToken.val, correntToken.line, expected));
+
+        } catch (NullPointerException e) {
+            result.push(new TokenAfterParse(correntToken.val, -1, expected));
+        }
+//goNextToken(false);
+    }
+
+    public void includeError(String expected, List follows) {
+        result.push(new TokenAfterParse(correntToken.val, correntToken.line, expected));
+
+        while (tokens.size() > 0) {
+            try {
+                if (follows.contains(correntToken.val) || (follows.contains("IDE") && correntToken.type == Token.T.IDE)) {
+                    break;
+                } else {
+                    result.push(new TokenAfterParse(correntToken.val, correntToken.line, expected, true));
+
+                }
+                nextToken(false);
+            } catch (NullPointerException e) {
+                Token errorParseEOF = new Token(Token.T.EOF, "", -1);
+                result.push(new TokenAfterParse(errorParseEOF.val, -1, expected));
+            }
+        }
+//goNextToken(false);
     }
 
     public Token.T typeNextToken() {
