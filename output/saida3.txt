@@ -1,0 +1,50 @@
+2 PRE const
+2 DEL {
+4 PRE int
+4 IDE inteiro
+4 ParserError ;    Esperado: [,  ,  =]
+4 ParserError ;    Esperado: [,  ,  =]    - Em Modo Pânico
+5 PRE int
+5 IDE a
+5 ParserError ;    Esperado: [,  ,  =]
+5 ParserError ;    Esperado: [,  ,  =]    - Em Modo Pânico
+6 PRE real
+6 IDE numero_real
+6 ParserError ;    Esperado: [,  ,  =]
+6 ParserError ;    Esperado: [,  ,  =]    - Em Modo Pânico
+7 PRE real
+7 IDE numero_real2
+7 ParserError ;    Esperado: [,  ,  =]
+7 ParserError ;    Esperado: [,  ,  =]    - Em Modo Pânico
+8 DEL }
+10 PRE var
+12 ParserError int    Esperado: [{]
+12 ParserError int    Esperado: [{]    - Em Modo Pânico
+12 ParserError inteiro    Esperado: [{]    - Em Modo Pânico
+12 ParserError ;    Esperado: [{]    - Em Modo Pânico
+13 ParserError int    Esperado: [{]    - Em Modo Pânico
+13 ParserError a    Esperado: [{]    - Em Modo Pânico
+13 ParserError ;    Esperado: [{]    - Em Modo Pânico
+14 ParserError real    Esperado: [{]    - Em Modo Pânico
+14 ParserError numero_real    Esperado: [{]    - Em Modo Pânico
+14 ParserError ;    Esperado: [{]    - Em Modo Pânico
+15 ParserError real    Esperado: [{]    - Em Modo Pânico
+15 ParserError numero_real2    Esperado: [{]    - Em Modo Pânico
+15 ParserError ;    Esperado: [{]    - Em Modo Pânico
+16 ParserError }    Esperado: [{]    - Em Modo Pânico
+18 PRE procedure
+18 PRE start
+18 DEL (
+18 DEL )
+19 DEL {
+21 IDE inteiro
+21 REL =
+21 NRO 1
+21 DEL ;
+22 DEL }
+
+
+-------------------------
+
+Arquivo contém 5 erros sintáticos (excluindo Modo Pânico)
+Arquivo sem erros léxicos

@@ -5,6 +5,7 @@
  */
 package Model;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,13 +18,23 @@ public class Parser {
     private final LinkedList<Token> tokens;
     private Token correntToken;
     private Token nextToken;
+    private int erros;
     private final LinkedList<TokenAfterParse> result;
 
     public Parser(LinkedList<Token> tokens) {
+        erros = 0;
         this.tokens = tokens;
         correntToken = tokens.pollFirst();
         nextToken = tokens.pollFirst();
         result = new LinkedList<>();
+    }
+
+    public int erros() {
+        return erros;
+    }
+
+    public boolean hasErros() {
+        return erros > 0;
     }
 
     public LinkedList<Token> getTokens() {
@@ -56,47 +67,55 @@ public class Parser {
     }
 
     public Token nextToken() {
-        result.push(new TokenAfterParse(correntToken));
-        correntToken = nextToken;
-        nextToken = tokens.pollFirst();
+        do {
+            result.addLast(new TokenAfterParse(correntToken));
+            correntToken = nextToken;
+            nextToken = tokens.pollFirst();
+        } while (correntToken != null && correntToken.isError());
         return correntToken;
     }
 
     public Token nextToken(boolean include) {
-        if (include) {
-            result.push(new TokenAfterParse(correntToken));
-        }
-        correntToken = nextToken;
-        nextToken = tokens.pollFirst();
+        do {
+            if (include) {
+                result.addLast(new TokenAfterParse(correntToken));
+            }
+            correntToken = nextToken;
+            nextToken = tokens.pollFirst();
+        } while (correntToken != null && correntToken.isError());
 
         return correntToken;
     }
 
     public void includeError(String expected) {
+        erros++;
+        String[] expecteds = expected.split(",");
+
         try {
-            result.push(new TokenAfterParse(correntToken.val, correntToken.line, expected));
+            result.addLast(new TokenAfterParse(correntToken.val, correntToken.line, Arrays.toString(expecteds)));
 
         } catch (NullPointerException e) {
-            result.push(new TokenAfterParse(correntToken.val, -1, expected));
+            result.addLast(new TokenAfterParse(correntToken.val, -1, Arrays.toString(expecteds)));
         }
 //goNextToken(false);
     }
 
     public void includeError(String expected, List follows) {
-        result.push(new TokenAfterParse(correntToken.val, correntToken.line, expected));
-
+        String[] expecteds = expected.split(",");
+        result.addLast(new TokenAfterParse(correntToken.val, correntToken.line, Arrays.toString(expecteds)));
+        erros++;
         while (tokens.size() > 0) {
             try {
                 if (follows.contains(correntToken.val) || (follows.contains("IDE") && correntToken.type == Token.T.IDE)) {
                     break;
                 } else {
-                    result.push(new TokenAfterParse(correntToken.val, correntToken.line, expected, true));
+                    result.addLast(new TokenAfterParse(correntToken.val, correntToken.line, Arrays.toString(expecteds), true));
 
                 }
                 nextToken(false);
             } catch (NullPointerException e) {
                 Token errorParseEOF = new Token(Token.T.EOF, "", -1);
-                result.push(new TokenAfterParse(errorParseEOF.val, -1, expected));
+                result.addLast(new TokenAfterParse(errorParseEOF.val, -1, Arrays.toString(expecteds)));
             }
         }
 //goNextToken(false);

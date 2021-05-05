@@ -27,6 +27,10 @@ public class ParserController {
         parse = new Parser(tokens);
     }
 
+    public Parser getParse() {
+        return parse;
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -34,7 +38,8 @@ public class ParserController {
             result.append(info).append("\n");
         });
         result.append("\n\n-------------------------\n\n");
-
+        result.append(parse.hasErros() ? "Arquivo contém " + parse.erros() + " erros sintáticos (excluindo Modo Pânico)" : "Arquivo analisado com sucesso!");
+        
         return result.toString();
     }
 
@@ -73,6 +78,9 @@ public class ParserController {
                 follow = Arrays.asList("function", "procedure");
                 parse.includeError("start", follow);
             }
+        } else {
+            follow = Arrays.asList("function", "procedure");
+            parse.includeError("procedure", follow);
         }
     }
 
@@ -293,14 +301,14 @@ public class ParserController {
                 parse.nextToken();
                 var_decls();
                 if (!parse.getCorrentToken().val.equals("}")) {
-                    follow = Arrays.asList("while", "read", "local", "}", "procedure", ";", "return", "global", "print", "if", "IDE");
+                    follow = Arrays.asList("while", "read", "{", "local", "}", "procedure", ";", "return", "global", "print", "if", "IDE");
                     parse.includeError("}", follow);
 
                 } else {
                     parse.nextToken();
                 }
             } else {
-                follow = Arrays.asList("while", "read", "local", "procedure", ";", "return", "global", "print", "if", "IDE");
+                follow = Arrays.asList("while", "read", "local", "procedure", "return", "global", "print", "if");
                 parse.includeError("{", follow);
             }
         }
@@ -410,7 +418,7 @@ public class ParserController {
             stm_id();
         } else {
             follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
-            parse.includeError(";", follow);
+            parse.includeError("--, (, ., =, ++, [, IDE", follow);
         }
     }
 

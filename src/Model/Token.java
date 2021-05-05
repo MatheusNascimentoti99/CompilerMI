@@ -5,7 +5,7 @@ import java.util.Formatter;
 public class Token {
 
     public enum T {
-        PRE, IDE, NRO, LOG, ART, REL, DEL, CAD, CoMF, EOF, SIB, OpMF, NMF, CMF, Parser
+        PRE, IDE, NRO, LOG, ART, REL, DEL, CAD, CoMF, EOF, SIB, OpMF, NMF, CMF, ParserError
     };
     public T type;
     public Object val;

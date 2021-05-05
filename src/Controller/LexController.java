@@ -17,7 +17,7 @@ import java.util.LinkedList;
  */
 public final class LexController {
 
-    int errors;
+    public int erros;
     Reader input;
     LinkedList<Token> tokens;
     int charactere = 0;
@@ -27,7 +27,7 @@ public final class LexController {
     HashMap<Integer, String> listPLE;
 
     public LexController(Reader input) throws IOException {
-        errors = 0;
+        erros = 0;
         this.input = input;
         listPLE = new HashMap<>();
         for (String PLE1 : PLE) {
@@ -144,7 +144,7 @@ public final class LexController {
                         Q3(); // Entrada de Letras
                     } else {
                         // Valores não especificados 
-                        errors++;
+                        erros++;
                         tokens.add(new Token(Token.T.SIB, (char) charactere, position));
                         charactere = read();
                     }
@@ -205,7 +205,7 @@ public final class LexController {
             Q17();
             buffer = new String();
         } else {
-            errors++;
+            erros++;
             tokens.add(new Token(Token.T.NMF, buffer, position));
             buffer = new String();
         }
@@ -294,7 +294,7 @@ public final class LexController {
         }
         //Q16 charactere == 47
         if ((charactere < 0)) {                 //Se chegar no final do arquivo, então o comentário nunca foi fechado
-            errors++;
+            erros++;
             tokens.add(new Token(Token.T.CoMF, buffer, position));
             buffer = new String();
         } else {            //Implica que teve um * como entrada, então passa para o próximo estado
@@ -326,7 +326,7 @@ public final class LexController {
         if (hasNumber) { //Se  já houve um número após o ponto, então finaliza em um estado de aceitação
             tokens.add(new Token(Token.T.NRO, buffer, position));
         } else {
-            errors++;
+            erros++;
             tokens.add(new Token(Token.T.NMF, buffer, position));
         }
 
@@ -354,7 +354,7 @@ public final class LexController {
         if (charactere == 124) {
             Q20_Q22();
         } else { //Se não houver outro | em seguida, então finaliza em um estado não final
-            errors++;
+            erros++;
             tokens.add(new Token(Token.T.OpMF, buffer, position));
         }
         buffer = new String();
@@ -377,7 +377,7 @@ public final class LexController {
         if (charactere == 38) {
             Q20_Q22();
         } else {
-            errors++;
+            erros++;
             tokens.add(new Token(Token.T.OpMF, buffer, position));
         }
         buffer = new String();
@@ -501,7 +501,7 @@ public final class LexController {
             read();
 
         }
-        errors++;
+        erros++;
         tokens.add(new Token(Token.T.CMF, buffer, position));
         buffer = new String();
         read();
@@ -520,7 +520,7 @@ public final class LexController {
     }
 
     public boolean hasErros() {
-        return errors > 0;
+        return erros > 0;
     }
 
     @Override
@@ -530,7 +530,7 @@ public final class LexController {
             result.append(token.toString()).append("\n");
         });
         result.append("\n\n-------------------------\n\n");
-        result.append(errors > 0 ? "Arquivo contém " + errors + " erros léxicos" : "Arquivo analisado com sucesso!");
+        result.append(erros > 0 ? "Arquivo contém " + erros + " erros léxicos" : "Arquivo analisado com sucesso!");
 
         return result.toString();
     }

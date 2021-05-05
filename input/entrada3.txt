@@ -1,14 +1,21 @@
 // Arquivo de Entrada
+const{
 
-var
-{
 	int inteiro;
 	int a;
 	real numero_real;
 	real numero_real2;
 }
 
-procedure start
+var
+
+	int inteiro;
+	int a;
+	real numero_real;
+	real numero_real2;
+}
+
+procedure start()
 {
 
 	inteiro = 1;

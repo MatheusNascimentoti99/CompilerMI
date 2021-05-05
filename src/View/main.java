@@ -77,15 +77,15 @@ public class main {
                             numberEndFile.find();
                             try (FileWriter arqOutput = new FileWriter(outputPath.toString() + "\\saida" + numberEndFile.group() + ".txt")) {
                                 PrintWriter gravarArq = new PrintWriter(arqOutput);
-                                gravarArq.print(lex.toString());
                                 System.out.println("Arquivo analisado: " + path.getName());
+                                ParserController parser = new ParserController(lex.getTokens());
+                                parser.startSymbol();
+                                StringBuilder result = new StringBuilder();
+                                result.append(parser.toString());
+                                result.append(lex.hasErros()? "\nArquivo contém " + lex.erros + " erros léxicos" : "\nArquivo sem erros léxicos");
+                                gravarArq.print(result.toString());
                                 System.out.println("Output criado: saida" + numberEndFile.group() + ".txt");
-                                System.out.println(lex.hasErros() ? "Arquivo contém erros\n" : "Sucesso! Arquivo não contém erros \n");
-                                if (!lex.hasErros()) {
-                                    ParserController parser = new ParserController(lex.getTokens());
-                                    parser.startSymbol();
-                                    System.out.println(parser.toString());
-                                }
+                                System.out.println(parser.getParse().hasErros() ? "Arquivo contém " + parser.getParse().erros() + " erros sintáticos\n" : "Sucesso! Arquivo não contém erros sintáticos\n");
                             } catch (IOException e) {
                                 System.err.println("Não foi possível criar o arquivo " + outputPath.toString() + "\\saida" + numberEndFile.group() + ".txt");
                             }

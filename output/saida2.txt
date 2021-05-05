@@ -1,0 +1,53 @@
+3 PRE var
+4 DEL {
+5 PRE int
+5 IDE inteiro
+5 DEL ;
+6 PRE int
+6 IDE a
+6 DEL ;
+7 PRE real
+7 IDE numero_real
+7 DEL ;
+8 PRE real
+8 IDE numero_real2
+8 DEL ;
+9 DEL }
+11 ParserError start    Esperado: [procedure]
+11 ParserError start    Esperado: [procedure]    - Em Modo Pânico
+12 ParserError {    Esperado: [procedure]    - Em Modo Pânico
+14 ParserError inteiro    Esperado: [procedure]    - Em Modo Pânico
+14 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+14 ParserError 1    Esperado: [procedure]    - Em Modo Pânico
+14 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
+15 ParserError a    Esperado: [procedure]    - Em Modo Pânico
+15 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+15 ParserError 1.1    Esperado: [procedure]    - Em Modo Pânico
+15 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
+16 ParserError numero_real    Esperado: [procedure]    - Em Modo Pânico
+16 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+16 ParserError 1.123456789    Esperado: [procedure]    - Em Modo Pânico
+17 ParserError numero_real2    Esperado: [procedure]    - Em Modo Pânico
+17 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+17 ParserError 123456789.1    Esperado: [procedure]    - Em Modo Pânico
+19 ParserError inteiro    Esperado: [procedure]    - Em Modo Pânico
+19 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+19 ParserError 1    Esperado: [procedure]    - Em Modo Pânico
+19 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
+20 ParserError a    Esperado: [procedure]    - Em Modo Pânico
+20 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+20 ParserError 1.1    Esperado: [procedure]    - Em Modo Pânico
+20 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
+21 ParserError numero_real    Esperado: [procedure]    - Em Modo Pânico
+21 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+21 ParserError 1.123456    Esperado: [procedure]    - Em Modo Pânico
+21 ParserError .    Esperado: [procedure]    - Em Modo Pânico
+21 ParserError 789    Esperado: [procedure]    - Em Modo Pânico
+22 ParserError numero_real2    Esperado: [procedure]    - Em Modo Pânico
+22 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+
+
+-------------------------
+
+Arquivo contém 1 erros sintáticos (excluindo Modo Pânico)
+Arquivo sem erros léxicos

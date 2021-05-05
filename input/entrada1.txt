@@ -1,21 +1,11 @@
 struct structTest{
-    const 
-        int  a[3][10]= {3, 3, 99, teste()},{a > 9,10};
-    }
-    var {
-        int varIntStruct;
-        varStringStruct;
-    }
-}
-
-struct structDois extends struct structTest{
     const {
-        
+      a[3][10]= {3, 3, 99, teste()},{a > 9,10};
     }
     var {
-        
-    
-}
+        int @teste;
+        varStringStruct;
+   } 
 
 
 var {
@@ -30,66 +20,10 @@ procedure start(){
         int varInt1;
     }
     teste[9] = 77;
-    s1.varIntStruct = 2;
-    local.a[0] = global.varInt[2] + testFunction();
-    local.a = global.varInt[2] + testFunction();
-    local.a = global.varInt1 + testFunction();
-    testProcedure(testFunction());
-    testFunction();
-    read(varInt1);
-    print(varInt1);
-
-    testIfs(500);
+  
 }
 
-function int testFunction(int a, real b){
-    var {
-        int result;
-    }
-    result = a + b;
-    return result;
-}
-
-procedure testProcedure(string show){
-    print("Mostrar:");
-    print(show);
-}
-procedure testProcedure(int show){
-    print("Mostrar:");
-    print(show);
-}
-
-function int testIfs(int numero) {
-    var {
-        int resposta, vezes;
-        boolean acertou;
-        
-        vezes   = 0;
-        acertou = false;
-    }
-
-    print("adivinhe o numero natural");
-
-    while (!acertou && vezes < numero) {
-        vezes++;
-    
-        print("digite um numero:");
-        read(resposta);
-        
-        if(resposta < numero) then
-            print("tem que ser maior");
-        else if (resposta > numero) then
-            print("tem que ser menor");
-        else {
-            if (vezes == 1) then
-                print("acertou de primeira");
-            else
-           
-                print("acertou, mas demorou ", vezes, "vezes");
-                
-            return true;
-        }                            
-    }    
-    
-    return 0;
+function boolean teste(int a, int b[]){
+	a = b[g+g/4] * 22.5 - (4+5);
+	return a;
 }

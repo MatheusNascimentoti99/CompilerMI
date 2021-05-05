@@ -6,6 +6,7 @@
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Controller/ParserController.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Token.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/View/main.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/TokenAfterParse.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Controller/LexController.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Parser.java</file>
         </group>

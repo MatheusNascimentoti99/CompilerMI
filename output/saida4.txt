@@ -1,0 +1,65 @@
+3 PRE var
+4 DEL {
+5 PRE int
+5 IDE inteiro
+5 DEL ;
+6 PRE int
+6 IDE a
+6 DEL ;
+7 PRE real
+7 IDE numero_real
+7 DEL ;
+8 PRE real
+8 IDE numero_real2
+8 DEL ;
+9 DEL }
+11 PRE procedure
+11 PRE start
+11 DEL (
+11 DEL )
+12 DEL {
+14 IDE inteiro
+14 REL =
+14 NRO 1
+14 DEL ;
+15 IDE a
+15 REL =
+15 NRO 1.1
+15 DEL ;
+16 IDE numero_real
+16 REL =
+16 NRO 1.123456789
+17 ParserError numero_real2    Esperado: [;]
+17 IDE numero_real2
+17 REL =
+17 NRO 123456789.1
+19 ParserError inteiro    Esperado: [;]
+19 IDE inteiro
+19 REL =
+19 ParserError .    Esperado: [LOG,  CAD,  NRO,  'local,  'global',  IDE,  (]
+19 ParserError .    Esperado: [LOG,  CAD,  NRO,  'local,  'global',  IDE,  (]    - Em Modo Pânico
+19 ParserError 1    Esperado: [LOG,  CAD,  NRO,  'local,  'global',  IDE,  (]    - Em Modo Pânico
+19 DEL ;
+20 IDE a
+20 REL =
+20 NRO 1.1
+20 SIB _
+20 DEL ;
+21 IDE numero_real
+21 REL =
+21 NRO 1.123456
+21 ParserError .    Esperado: [;]
+21 ParserError .    Esperado: [;]    - Em Modo Pânico
+21 ParserError 789    Esperado: [;]    - Em Modo Pânico
+22 IDE numero_real2
+22 REL =
+22 NRO 1234
+22 SIB @
+22 ParserError 56789.1    Esperado: [;]
+22 ParserError 56789.1    Esperado: [}]
+
+
+-------------------------
+
+Arquivo contém 6 erros sintáticos (excluindo Modo Pânico)
+Arquivo contém 2 erros léxicos

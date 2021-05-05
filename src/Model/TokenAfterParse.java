@@ -5,7 +5,6 @@
  */
 package Model;
 
-import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -22,12 +21,12 @@ public class TokenAfterParse extends Token {
     }
 
     public TokenAfterParse(Object val, int positionLine, String expected) {
-        super(Token.T.Parser, val, positionLine);
+        super(Token.T.ParserError, val, positionLine);
         this.expected = expected;
     }
 
     public TokenAfterParse(Object val, int positionLine, String expected, boolean panicMode) {
-        super(Token.T.Parser, val, positionLine);
+        super(Token.T.ParserError, val, positionLine);
         this.expected = expected;
         this.panic = panicMode;
     }
@@ -39,11 +38,11 @@ public class TokenAfterParse extends Token {
         if (val != null) {
             out.format(" %s", super.val);
         }
-        if (super.type == Token.T.Parser) {
+        if (super.type == Token.T.ParserError) {
             out.format("    Esperado: %s", expected);
         }
         if (panic) {
-            out.format("    - Em modo pânico");
+            out.format("    - Em Modo Pânico");
 
         }
 
