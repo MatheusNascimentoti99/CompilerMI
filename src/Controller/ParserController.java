@@ -39,7 +39,7 @@ public class ParserController {
         });
         result.append("\n\n-------------------------\n\n");
         result.append(parse.hasErros() ? "Arquivo contém " + parse.erros() + " erros sintáticos (excluindo Modo Pânico)" : "Arquivo analisado com sucesso!");
-        
+
         return result.toString();
     }
 
@@ -61,26 +61,24 @@ public class ParserController {
             parse.nextToken();
             if (parse.getCorrentToken().val.equals("start")) {
                 parse.nextToken();
-                if (parse.getCorrentToken().val.equals("(")) {
-                    parse.nextToken();
-                    if (parse.getCorrentToken().val.equals(")")) {
-                        parse.nextToken();
-                        func_block();
-                    } else {
-                        follow = Arrays.asList("function", "procedure");
-                        parse.includeError(")", follow);
-                    }
+                if (!parse.getCorrentToken().val.equals("(")) {
+                    parse.includeError("(");
                 } else {
-                    follow = Arrays.asList("function", "procedure");
-                    parse.includeError("(", follow);
+                    parse.nextToken();
                 }
+                if (!parse.getCorrentToken().val.equals(")")) {
+                    parse.includeError(")");
+                } else {
+                    parse.nextToken();
+                }
+                func_block();
             } else {
                 follow = Arrays.asList("function", "procedure");
                 parse.includeError("start", follow);
             }
         } else {
             follow = Arrays.asList("function", "procedure");
-            parse.includeError("procedure", follow);
+            parse.includeError("procedure start", follow);
         }
     }
 
@@ -103,19 +101,18 @@ public class ParserController {
             param_type();
             if (parse.getCorrentToken().type == Token.T.IDE) {
                 parse.nextToken();
-                if (parse.getCorrentToken().val.equals("(")) {
+                if (!parse.getCorrentToken().val.equals("(")) {
+                    parse.includeError("(");
+                } else {
                     parse.nextToken();
-                    params();
-                    if (parse.getCorrentToken().val.equals(")")) {
-                        parse.nextToken();
-                        func_block();
-                    } else {
-                        follow = Arrays.asList("procedure", "function");
-                        parse.includeError(")", follow);
-                    }
+                }
+                params();
+                if (parse.getCorrentToken().val.equals(")")) {
+                    parse.nextToken();
+                    func_block();
                 } else {
                     follow = Arrays.asList("procedure", "function");
-                    parse.includeError("(", follow);
+                    parse.includeError(")", follow);
                 }
             } else {
                 follow = Arrays.asList("procedure", "function");
@@ -127,21 +124,20 @@ public class ParserController {
     private void proc_decl() {
         if (parse.getCorrentToken().val.equals("procedure")) {
             parse.nextToken();
-            if (parse.getCorrentToken().type == Token.T.IDE) {
+            if (parse.getCorrentToken().type == Token.T.IDE && !parse.getCorrentToken().val.equals("start")) {
                 parse.nextToken();
-                if (parse.getCorrentToken().val.equals("(")) {
+                if (!parse.getCorrentToken().val.equals("(")) {
+                    parse.includeError("(");
+                } else {
                     parse.nextToken();
-                    params();
-                    if (parse.getCorrentToken().val.equals(")")) {
-                        parse.nextToken();
-                        func_block();
-                    } else {
-                        follow = Arrays.asList("procedure", "function");
-                        parse.includeError(")", follow);
-                    }
+                }
+                params();
+                if (parse.getCorrentToken().val.equals(")")) {
+                    parse.nextToken();
+                    func_block();
                 } else {
                     follow = Arrays.asList("procedure", "function");
-                    parse.includeError("(", follow);
+                    parse.includeError(")", follow);
                 }
             } else {
                 follow = Arrays.asList("procedure", "function");
@@ -235,19 +231,18 @@ public class ParserController {
             if (parse.getCorrentToken().type == Token.T.IDE) {
                 parse.nextToken();
                 extends_();
-                if (parse.getCorrentToken().val.equals("{")) {
-                    parse.nextToken();
-                    const_block();
-                    var_block();
-                    if (!parse.getCorrentToken().val.equals("}")) {
-                        follow = Arrays.asList("const", "procedure", "struct", "var");
-                        parse.includeError("}", follow);
-                    } else {
-                        parse.nextToken();
-                    }
+                if (!parse.getCorrentToken().val.equals("{")) {
+                    parse.includeError("{");
                 } else {
+                    parse.nextToken();
+                }
+                const_block();
+                var_block();
+                if (!parse.getCorrentToken().val.equals("}")) {
                     follow = Arrays.asList("const", "procedure", "struct", "var");
-                    parse.includeError("{", follow);
+                    parse.includeError("}", follow);
+                } else {
+                    parse.nextToken();
                 }
             } else {
                 follow = Arrays.asList("const", "procedure", "struct", "var");
@@ -277,19 +272,19 @@ public class ParserController {
     private void const_block() {
         if (parse.getCorrentToken().val.equals("const")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("{")) {
-                parse.nextToken();
-                const_decls();
-                if (!parse.getCorrentToken().val.equals("}")) {
-                    follow = Arrays.asList("}", "procedure", "var");
-                    parse.includeError("}", follow);
-                } else {
-                    parse.nextToken();
-                }
+            if (!parse.getCorrentToken().val.equals("{")) {
+                parse.includeError("{");
             } else {
-                follow = Arrays.asList("procedure", "var");
-                parse.includeError("{", follow);
+                parse.nextToken();
             }
+            const_decls();
+            if (!parse.getCorrentToken().val.equals("}")) {
+                follow = Arrays.asList("procedure", "var");
+                parse.includeError("}", follow);
+            } else {
+                parse.nextToken();
+            }
+
         }
 
     }
@@ -297,19 +292,18 @@ public class ParserController {
     private void var_block() {
         if (parse.getCorrentToken().val.equals("var")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("{")) {
-                parse.nextToken();
-                var_decls();
-                if (!parse.getCorrentToken().val.equals("}")) {
-                    follow = Arrays.asList("while", "read", "{", "local", "}", "procedure", ";", "return", "global", "print", "if", "IDE");
-                    parse.includeError("}", follow);
-
-                } else {
-                    parse.nextToken();
-                }
+            if (!parse.getCorrentToken().val.equals("{")) {
+                parse.includeError("{");
             } else {
-                follow = Arrays.asList("while", "read", "local", "procedure", "return", "global", "print", "if");
-                parse.includeError("{", follow);
+                parse.nextToken();
+            }
+            var_decls();
+            if (!parse.getCorrentToken().val.equals("}")) {
+                follow = Arrays.asList("while", "read", "{", "local", "procedure", "return", "global", "print", "if", "IDE");
+                parse.includeError("}", follow);
+
+            } else {
+                parse.nextToken();
             }
         }
 
@@ -337,8 +331,7 @@ public class ParserController {
     }
 
     private void const_decl() {
-        if (types.contains(parse.getCorrentToken().val)
-                || parse.getCorrentToken().type == Token.T.IDE) {
+        if (types.contains(parse.getCorrentToken().val)) {
             type();
             const_();
             const_list();
@@ -396,6 +389,16 @@ public class ParserController {
                 follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
                 parse.includeError(";", follow);
             }
+        } else if (parse.getCorrentToken().val.equals("--")
+                || parse.getCorrentToken().val.equals("(")
+                || parse.getCorrentToken().val.equals(".")
+                || parse.getCorrentToken().val.equals("=")
+                || parse.getCorrentToken().val.equals("++")
+                || parse.getCorrentToken().val.equals("[")) {
+            stm_id();
+        } else {
+            follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
+            parse.includeError("--, (, ., =, ++, [, IDE", follow);
         }
     }
 
@@ -568,20 +571,18 @@ public class ParserController {
     }
 
     private void func_block() {
-        if (parse.getCorrentToken().val.equals("{")) {
+        if (!parse.getCorrentToken().val.equals("{")) {
+            parse.includeError("{");
+        } else {
             parse.nextToken();
-            var_block();
-            func_stms();
-            if (parse.getCorrentToken().val.equals("}")) {
-                parse.nextToken();
-            } else {
-                follow = Arrays.asList("function", "procedure");
-                parse.includeError("}", follow);
-            }
-
+        }
+        var_block();
+        func_stms();
+        if (parse.getCorrentToken().val.equals("}")) {
+            parse.nextToken();
         } else {
             follow = Arrays.asList("function", "procedure");
-            parse.includeError("{", follow);
+            parse.includeError("}", follow);
         }
     }
 
@@ -593,46 +594,43 @@ public class ParserController {
     }
 
     private void func_stm() {
-        follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
+        follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", "global", "print", "{", "if");
         if (parse.getCorrentToken().val.equals("if")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("(")) {
-                parse.nextToken();
-                log_expr();
-                if (parse.getCorrentToken().val.equals(")")) {
-                    parse.nextToken();
-                    if (parse.getCorrentToken().val.equals("then")) {
-                        parse.nextToken();
-                        func_stm();
-                        else_stm();
-                        func_stm();
-                    } else {
-                        follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
-                        parse.includeError("then", follow);
-                    }
-                } else {
-                    follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
-                    parse.includeError(")", follow);
-                }
+            if (!parse.getCorrentToken().val.equals("(")) {
+                parse.includeError("(");
             } else {
-                follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
-                parse.includeError("(", follow);
+                parse.nextToken();
+            }
+            log_expr();
+            if (parse.getCorrentToken().val.equals(")")) {
+                parse.nextToken();
+                if (!parse.getCorrentToken().val.equals("then")) {
+                    parse.includeError("then");
+                } else {
+                    parse.nextToken();
+                }
+                func_stm();
+                else_stm();
+                func_stm();
+            } else {
+                follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ';', "global", "print", "{", "if");
+                parse.includeError(")", follow);
             }
         } else if (parse.getCorrentToken().val.equals("while")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("(")) {
-                parse.nextToken();
-                log_expr();
-                if (parse.getCorrentToken().val.equals(")")) {
-                    parse.nextToken();
-                    func_stm();
-                } else {
-                    follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
-                    parse.includeError("), IDE, NRO, LOG, ART, REL, DEL, CAD", follow);
-                }
+            if (!parse.getCorrentToken().val.equals("(")) {
+                parse.includeError("(");
             } else {
-                follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
-                parse.includeError("(", follow);
+                parse.nextToken();
+            }
+            log_expr();
+            if (parse.getCorrentToken().val.equals(")")) {
+                parse.nextToken();
+                func_stm();
+            } else {
+                follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ";", "global", "print", "{", "if");
+                parse.includeError("), IDE, NRO, LOG, ART, REL, DEL, CAD", follow);
             }
         } else if (parse.getCorrentToken().val.equals("{")
                 || parse.getCorrentToken().val.equals("local")
@@ -654,7 +652,7 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals("}")) {
                 parse.nextToken();
             } else {
-                follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
+                follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ";", "global", "print", "{", "if");
                 parse.includeError("}", follow);
             }
         } else if (first_var_stm.contains(parse.getCorrentToken().val)
@@ -669,7 +667,7 @@ public class ParserController {
             if (parse.getCorrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
-                follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", ";", "global", "print", "{", "if");
+                follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ";", "global", "print", "{", "if");
                 parse.includeError(";", follow);
             }
         }
@@ -700,17 +698,17 @@ public class ParserController {
                     if (parse.getCorrentToken().val.equals(";")) {
                         parse.nextToken();
                     } else {
-                        follow = Arrays.asList(";", "return", "else", "id", "global",
+                        follow = Arrays.asList(";", "return", "else", "IDE", "global",
                                 "local", "print", "if", "read", "}", "while", "{");
                         parse.includeError(";", follow);
                     }
                 } else {
-                    follow = Arrays.asList(";", "return", "else", "id", "global",
+                    follow = Arrays.asList(";", "return", "else", "IDE", "global",
                             "local", "print", "if", "read", "}", "while", "{");
                     parse.includeError(")", follow);
                 }
             } else {
-                follow = Arrays.asList(";", "return", "else", "id", "global",
+                follow = Arrays.asList(";", "return", "else", "IDE", "global",
                         "local", "print", "if", "read", "}", "while", "{");
                 parse.includeError("(", follow);
             }
