@@ -7,6 +7,7 @@ package Controller;
 
 import Model.Parser;
 import Model.Token;
+import Utils.VarTable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +18,20 @@ import java.util.List;
  */
 public class ParserController {
 
+    private static final String ERROR_ESCOPE = "já declarado no escopo";
+
     private final List types = Arrays.asList("int", "real", "boolean", "string", "struct");
     private final Parser parse;
     List firstFunc_stm = Arrays.asList("if", "while", "{", "return", ";", "local", "global", "print", "read");
     List first_var_stm = Arrays.asList("local", "global", "print", "read");
     private List follow;
+    VarTable simbolTable;
+    TableController tableController;
 
     public ParserController(LinkedList<Token> tokens) {
         parse = new Parser(tokens);
+        simbolTable = new VarTable();
+        tableController = new TableController();
     }
 
     public Parser getParse() {
@@ -52,39 +59,33 @@ public class ParserController {
         structs();
         const_block();
         var_block();
-        start_block();
         decls();
     }
 
     private void start_block() {
-        if (parse.getCorrentToken().val.equals("procedure")) {
+
+        if (parse.getCurrentToken().val.equals("start")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("start")) {
-                parse.nextToken();
-                if (!parse.getCorrentToken().val.equals("(")) {
-                    parse.includeError("(");
-                } else {
-                    parse.nextToken();
-                }
-                if (!parse.getCorrentToken().val.equals(")")) {
-                    parse.includeError(")");
-                } else {
-                    parse.nextToken();
-                }
-                func_block();
+            if (!parse.getCurrentToken().val.equals("(")) {
+                parse.includeError("(");
             } else {
-                follow = Arrays.asList("function", "procedure");
-                parse.includeError("start", follow);
+                parse.nextToken();
             }
+            if (!parse.getCurrentToken().val.equals(")")) {
+                parse.includeError(")");
+            } else {
+                parse.nextToken();
+            }
+            func_block();
         } else {
             follow = Arrays.asList("function", "procedure");
-            parse.includeError("procedure start", follow);
+            parse.includeError("start", follow);
         }
     }
 
     private void decls() {
-        if (parse.getCorrentToken().val.equals("function")
-                || parse.getCorrentToken().val.equals("procedure")) {
+        if (parse.getCurrentToken().val.equals("function")
+                || parse.getCurrentToken().val.equals("procedure")) {
             decl();
             decls();
         }
@@ -96,18 +97,18 @@ public class ParserController {
     }
 
     private void func_decl() {
-        if (parse.getCorrentToken().val.equals("function")) {
+        if (parse.getCurrentToken().val.equals("function")) {
             parse.nextToken();
             param_type();
-            if (parse.getCorrentToken().type == Token.T.IDE) {
+            if (parse.getCurrentToken().type == Token.T.IDE) {
                 parse.nextToken();
-                if (!parse.getCorrentToken().val.equals("(")) {
+                if (!parse.getCurrentToken().val.equals("(")) {
                     parse.includeError("(");
                 } else {
                     parse.nextToken();
                 }
                 params();
-                if (parse.getCorrentToken().val.equals(")")) {
+                if (parse.getCurrentToken().val.equals(")")) {
                     parse.nextToken();
                     func_block();
                 } else {
@@ -122,52 +123,61 @@ public class ParserController {
     }
 
     private void proc_decl() {
-        if (parse.getCorrentToken().val.equals("procedure")) {
+        tableController.newEscape();
+        if (parse.getCurrentToken().val.equals("procedure")) {
             parse.nextToken();
-            if (parse.getCorrentToken().type == Token.T.IDE && !parse.getCorrentToken().val.equals("start")) {
+            if (parse.getCurrentToken().type == Token.T.IDE && !parse.getCurrentToken().val.equals("start")) {
                 parse.nextToken();
-                if (!parse.getCorrentToken().val.equals("(")) {
+                if (!parse.getCurrentToken().val.equals("(")) {
                     parse.includeError("(");
                 } else {
                     parse.nextToken();
                 }
                 params();
-                if (parse.getCorrentToken().val.equals(")")) {
+                if (parse.getCurrentToken().val.equals(")")) {
                     parse.nextToken();
                     func_block();
                 } else {
                     follow = Arrays.asList("procedure", "function");
                     parse.includeError(")", follow);
                 }
+            } else if (parse.getCurrentToken().val.equals("start")) {
+                start_block();
+                if (parse.getCurrentToken().type != Token.T.EOF) {
+                    follow = Arrays.asList("procedure", "function");
+                    parse.includeError("EOF", follow);
+
+                }
             } else {
                 follow = Arrays.asList("procedure", "function");
                 parse.includeError("IDE", follow);
             }
         }
+        tableController.removeEscape();
     }
 
     private void param_type() {
-        if (parse.getCorrentToken().type == Token.T.IDE) {
+        if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
-        } else if (types.contains(parse.getCorrentToken().val)) {
+        } else if (types.contains(parse.getCurrentToken().val)) {
             type();
         }
     }
 
     private void params() {
-        if (parse.getCorrentToken().val.equals("int")
-                || parse.getCorrentToken().val.equals("real")
-                || parse.getCorrentToken().val.equals("boolean")
-                || parse.getCorrentToken().val.equals("string")
-                || parse.getCorrentToken().val.equals("struct")
-                || parse.getCorrentToken().type == Token.T.IDE) {
+        if (parse.getCurrentToken().val.equals("int")
+                || parse.getCurrentToken().val.equals("real")
+                || parse.getCurrentToken().val.equals("boolean")
+                || parse.getCurrentToken().val.equals("string")
+                || parse.getCurrentToken().val.equals("struct")
+                || parse.getCurrentToken().type == Token.T.IDE) {
             param();
             params_list();
         }
     }
 
     private void params_list() {
-        if (parse.getCorrentToken().val.equals(",")) {
+        if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
             param();
             params_list();
@@ -177,7 +187,7 @@ public class ParserController {
 
     private void param() {
         param_type();
-        if (parse.getCorrentToken().type == Token.T.IDE) {
+        if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
             param_arrays();
         } else {
@@ -187,9 +197,9 @@ public class ParserController {
     }
 
     private void param_arrays() {
-        if (parse.getCorrentToken().val.equals("[")) {
+        if (parse.getCurrentToken().val.equals("[")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("]")) {
+            if (parse.getCurrentToken().val.equals("]")) {
                 parse.nextToken();
                 param_mult_arrays();
             } else {
@@ -200,11 +210,11 @@ public class ParserController {
     }
 
     private void param_mult_arrays() {
-        if (parse.getCorrentToken().val.equals("[")) {
+        if (parse.getCurrentToken().val.equals("[")) {
             parse.nextToken();
-            if (parse.getCorrentToken().type == Token.T.NRO) {
+            if (parse.getCurrentToken().type == Token.T.INT || parse.getCurrentToken().type == Token.T.REAL) {
                 parse.nextToken();
-                if (parse.getCorrentToken().val.equals("]")) {
+                if (parse.getCurrentToken().val.equals("]")) {
                     parse.nextToken();
                     param_mult_arrays();
                 } else {
@@ -219,26 +229,28 @@ public class ParserController {
     }
 
     private void structs() {
-        if (parse.getCorrentToken().val.equals("struct")) {
+        if (parse.getCurrentToken().val.equals("struct")) {
             struct_block();
             structs();
         }
     }
 
     private void struct_block() {
-        if (parse.getCorrentToken().val.equals("struct")) {
-            parse.nextToken();
-            if (parse.getCorrentToken().type == Token.T.IDE) {
+        if (parse.getCurrentToken().val.equals("struct")) {
+            if (!tableController.addStructScape(parse.nextToken())) {
+                parse.includeError("já declarado", Token.T.SEMANTIC);
+            }
+            if (parse.getCurrentToken().type == Token.T.IDE) {
                 parse.nextToken();
                 extends_();
-                if (!parse.getCorrentToken().val.equals("{")) {
+                if (!parse.getCurrentToken().val.equals("{")) {
                     parse.includeError("{");
                 } else {
                     parse.nextToken();
                 }
                 const_block();
                 var_block();
-                if (!parse.getCorrentToken().val.equals("}")) {
+                if (!parse.getCurrentToken().val.equals("}")) {
                     follow = Arrays.asList("const", "procedure", "struct", "var");
                     parse.includeError("}", follow);
                 } else {
@@ -248,18 +260,19 @@ public class ParserController {
                 follow = Arrays.asList("const", "procedure", "struct", "var");
                 parse.includeError("IDE", follow);
             }
+            tableController.removeStructScape();
         }
     }
 
     private void extends_() {
-        if (parse.getCorrentToken().val.equals("extends")) {
+        if (parse.getCurrentToken().val.equals("extends")) {
             parse.nextToken();
-            if (!parse.getCorrentToken().val.equals("struct")) {
+            if (!parse.getCurrentToken().val.equals("struct")) {
                 follow = Arrays.asList("{");
                 parse.includeError("struct", follow);
             } else {
                 parse.nextToken();
-                if (parse.getCorrentToken().type == Token.T.IDE) {
+                if (parse.getCurrentToken().type == Token.T.IDE) {
                     parse.nextToken();
                 } else {
                     follow = Arrays.asList("{");
@@ -270,15 +283,15 @@ public class ParserController {
     }
 
     private void const_block() {
-        if (parse.getCorrentToken().val.equals("const")) {
+        if (parse.getCurrentToken().val.equals("const")) {
             parse.nextToken();
-            if (!parse.getCorrentToken().val.equals("{")) {
+            if (!parse.getCurrentToken().val.equals("{")) {
                 parse.includeError("{");
             } else {
                 parse.nextToken();
             }
             const_decls();
-            if (!parse.getCorrentToken().val.equals("}")) {
+            if (!parse.getCurrentToken().val.equals("}")) {
                 follow = Arrays.asList("procedure", "var");
                 parse.includeError("}", follow);
             } else {
@@ -290,15 +303,15 @@ public class ParserController {
     }
 
     private void var_block() {
-        if (parse.getCorrentToken().val.equals("var")) {
+        if (parse.getCurrentToken().val.equals("var")) {
             parse.nextToken();
-            if (!parse.getCorrentToken().val.equals("{")) {
+            if (!parse.getCurrentToken().val.equals("{")) {
                 parse.includeError("{");
             } else {
                 parse.nextToken();
             }
             var_decls();
-            if (!parse.getCorrentToken().val.equals("}")) {
+            if (!parse.getCurrentToken().val.equals("}")) {
                 follow = Arrays.asList("while", "read", "{", "local", "procedure", "return", "global", "print", "if", "IDE");
                 parse.includeError("}", follow);
 
@@ -310,36 +323,36 @@ public class ParserController {
     }
 
     private void const_decls() {
-        if (parse.getCorrentToken().type == Token.T.IDE
-                || types.contains(parse.getCorrentToken().val)
-                || parse.getCorrentToken().val.equals("typedef")
-                || parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")) {
+        if (parse.getCurrentToken().type == Token.T.IDE
+                || types.contains(parse.getCurrentToken().val)
+                || parse.getCurrentToken().val.equals("typedef")
+                || parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")) {
             const_decl();
             const_decls();
         }
     }
 
     private void var_decls() {
-        if (parse.getCorrentToken().type == Token.T.IDE || types.contains(parse.getCorrentToken().val)
-                || parse.getCorrentToken().val.equals("typedef")
-                || parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")) {
+        if (parse.getCurrentToken().type == Token.T.IDE || types.contains(parse.getCurrentToken().val)
+                || parse.getCurrentToken().val.equals("typedef")
+                || parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")) {
             var_decl();
             var_decls();
         }
     }
 
     private void const_decl() {
-        if (types.contains(parse.getCorrentToken().val)) {
+        if (types.contains(parse.getCurrentToken().val)) {
             type();
             const_();
             const_list();
-        } else if (parse.getCorrentToken().val.equals("typedef")) {
+        } else if (parse.getCurrentToken().val.equals("typedef")) {
             typedef();
-        } else if (parse.getCorrentToken().val.equals("local") || parse.getCorrentToken().val.equals("global")) {
+        } else if (parse.getCurrentToken().val.equals("local") || parse.getCurrentToken().val.equals("global")) {
             stm_scope();
-        } else if (parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
             const_id();
         } else {
@@ -349,7 +362,7 @@ public class ParserController {
     }
 
     private void stm_scope() {
-        if (parse.getCorrentToken().val.equals("local") || parse.getCorrentToken().val.equals("global")) {
+        if (parse.getCurrentToken().val.equals("local") || parse.getCurrentToken().val.equals("global")) {
             parse.nextToken();
             access();
             accesses();
@@ -358,19 +371,19 @@ public class ParserController {
     }
 
     private void var_decl() {
-        if (types.contains(parse.getCorrentToken().val)) {
+        if (types.contains(parse.getCurrentToken().val)) {
             type();
             var_();
             var_list();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
                 parse.includeError(";, ,", follow);
             }
-        } else if (parse.getCorrentToken().val.equals("typedef")) {
+        } else if (parse.getCurrentToken().val.equals("typedef")) {
             typedef();
-        } else if (parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
             var_id();
         } else {
@@ -380,21 +393,21 @@ public class ParserController {
     }
 
     private void const_id() {
-        if (parse.getCorrentToken().type == Token.T.IDE) {
+        if (parse.getCurrentToken().type == Token.T.IDE) {
             const_();
             const_list();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
                 parse.includeError(";", follow);
             }
-        } else if (parse.getCorrentToken().val.equals("--")
-                || parse.getCorrentToken().val.equals("(")
-                || parse.getCorrentToken().val.equals(".")
-                || parse.getCorrentToken().val.equals("=")
-                || parse.getCorrentToken().val.equals("++")
-                || parse.getCorrentToken().val.equals("[")) {
+        } else if (parse.getCurrentToken().val.equals("--")
+                || parse.getCurrentToken().val.equals("(")
+                || parse.getCurrentToken().val.equals(".")
+                || parse.getCurrentToken().val.equals("=")
+                || parse.getCurrentToken().val.equals("++")
+                || parse.getCurrentToken().val.equals("[")) {
             stm_id();
         } else {
             follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
@@ -403,21 +416,21 @@ public class ParserController {
     }
 
     private void var_id() {
-        if (parse.getCorrentToken().type == Token.T.IDE) {
+        if (parse.getCurrentToken().type == Token.T.IDE) {
             var_();
             var_list();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
                 parse.includeError(";", follow);
             }
-        } else if (parse.getCorrentToken().val.equals("--")
-                || parse.getCorrentToken().val.equals("(")
-                || parse.getCorrentToken().val.equals(".")
-                || parse.getCorrentToken().val.equals("=")
-                || parse.getCorrentToken().val.equals("++")
-                || parse.getCorrentToken().val.equals("[")) {
+        } else if (parse.getCurrentToken().val.equals("--")
+                || parse.getCurrentToken().val.equals("(")
+                || parse.getCurrentToken().val.equals(".")
+                || parse.getCurrentToken().val.equals("=")
+                || parse.getCurrentToken().val.equals("++")
+                || parse.getCurrentToken().val.equals("[")) {
             stm_id();
         } else {
             follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
@@ -426,25 +439,25 @@ public class ParserController {
     }
 
     private void stm_id() {
-        if (parse.getCorrentToken().val.equals("=")
-                || parse.getCorrentToken().val.equals("++")
-                || parse.getCorrentToken().val.equals("--")) {
+        if (parse.getCurrentToken().val.equals("=")
+                || parse.getCurrentToken().val.equals("++")
+                || parse.getCurrentToken().val.equals("--")) {
             assign();
-        } else if (parse.getCorrentToken().val.equals("[")) {
+        } else if (parse.getCurrentToken().val.equals("[")) {
             array();
             arrays();
             accesses();
             assign();
-        } else if (parse.getCorrentToken().val.equals(".")) {
+        } else if (parse.getCurrentToken().val.equals(".")) {
             access();
             accesses();
             assign();
-        } else if (parse.getCorrentToken().val.equals("(")) {
+        } else if (parse.getCurrentToken().val.equals("(")) {
             parse.nextToken();
             args();
-            if (parse.getCorrentToken().val.equals(")")) {
+            if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
-                if (parse.getCorrentToken().val.equals(";")) {
+                if (parse.getCurrentToken().val.equals(";")) {
                     parse.nextToken();
                 } else {
                     follow = Arrays.asList("local", "}", "int", "real", "else", "return", "typedef", "while", "string", "IDE", "read", "boolean", ";", "struct", "global", "print", "if", "{");
@@ -461,19 +474,19 @@ public class ParserController {
     }
 
     private void assign() {
-        if (parse.getCorrentToken().val.equals("=")) {
+        if (parse.getCurrentToken().val.equals("=")) {
             parse.nextToken();
             expr();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("local", "}", "int", "real", "else", "return", "typedef", "while", "string", "IDE", "read", "boolean", "struct", "global", "print", "if", "{");
                 parse.includeError(";", follow);
             }
-        } else if (parse.getCorrentToken().val.equals("++")
-                || parse.getCorrentToken().val.equals("--")) {
+        } else if (parse.getCurrentToken().val.equals("++")
+                || parse.getCurrentToken().val.equals("--")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("local", "}", "int", "real", "else", "return", "typedef", "while", "string", "IDE", "read", "boolean", "struct", "global", "print", "if", "{");
@@ -487,29 +500,30 @@ public class ParserController {
     }
 
     private void type() {
-        if (types.contains(parse.getCorrentToken().val)
-                || parse.getCorrentToken().type == Token.T.IDE) {
-            if (parse.getCorrentToken().val.equals("struct")) {
+        if (types.contains(parse.getCurrentToken().val)
+                || parse.getCurrentToken().type == Token.T.IDE) {
+            if (parse.getCurrentToken().val.equals("struct")) {
                 parse.nextToken();
-                if (parse.getCorrentToken().type != Token.T.IDE) {
+                if (parse.getCurrentToken().type != Token.T.IDE) {
                     follow = Arrays.asList("IDE");
                     parse.includeError("IDE", follow);
                 } else {
                     parse.nextToken();
                 }
             } else {
+                tableController.addType(parse.getCurrentToken());
                 parse.nextToken();
             }
         }
     }
 
     private void typedef() {
-        if (parse.getCorrentToken().val.equals("typedef")) {
+        if (parse.getCurrentToken().val.equals("typedef")) {
             parse.nextToken();
             type();
-            if (parse.getCorrentToken().type == Token.T.IDE) {
+            if (parse.getCurrentToken().type == Token.T.IDE) {
                 parse.nextToken();
-                if (parse.getCorrentToken().val.equals(";")) {
+                if (parse.getCurrentToken().val.equals(";")) {
                     parse.nextToken();
                 } else {
                     follow = Arrays.asList("local", "}", "int", "real", "IDE", "string", "typedef", "boolean", "struct", "global");
@@ -523,17 +537,20 @@ public class ParserController {
     }
 
     private void var_() {
-        if (parse.getCorrentToken().type != Token.T.IDE) {
+        if (parse.getCurrentToken().type != Token.T.IDE) {
             follow = Arrays.asList(";", ",");
             parse.includeError("IDE", follow);
         } else {
+            if (tableController.addVar(parse.getCurrentToken())) {
+                parse.includeError(ERROR_ESCOPE, Token.T.SEMANTIC);
+            }
             parse.nextToken();
             arrays();
         }
     }
 
     private void var_list() {
-        if (parse.getCorrentToken().val.equals(",")) {
+        if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
             var_();
             var_list();
@@ -541,24 +558,27 @@ public class ParserController {
     }
 
     private void const_() {
-        if (parse.getCorrentToken().type != Token.T.IDE) {
+        if (parse.getCurrentToken().type != Token.T.IDE) {
             follow = Arrays.asList("=", ",", ";");
             parse.includeError("IDE", follow);
         } else {
+            if (tableController.addConst(parse.getCurrentToken())) {
+                parse.includeError(ERROR_ESCOPE, Token.T.SEMANTIC);
+            }
             parse.nextToken();
             arrays();
         }
     }
 
     private void const_list() {
-        if (parse.getCorrentToken().val.equals(",")) {
+        if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
             const_();
             const_list();
-        } else if (parse.getCorrentToken().val.equals("=")) {
+        } else if (parse.getCurrentToken().val.equals("=")) {
             parse.nextToken();
             decl_atribute();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("string", "typedef", "local", "boolean", "}", "int", "struct", "real", "global", "IDE");
@@ -571,23 +591,25 @@ public class ParserController {
     }
 
     private void func_block() {
-        if (!parse.getCorrentToken().val.equals("{")) {
+        tableController.newEscape();
+        if (!parse.getCurrentToken().val.equals("{")) {
             parse.includeError("{");
         } else {
             parse.nextToken();
         }
         var_block();
         func_stms();
-        if (parse.getCorrentToken().val.equals("}")) {
+        if (parse.getCurrentToken().val.equals("}")) {
             parse.nextToken();
         } else {
             follow = Arrays.asList("function", "procedure");
             parse.includeError("}", follow);
         }
+        tableController.removeEscape();
     }
 
     private void func_stms() {
-        if (firstFunc_stm.contains(parse.getCorrentToken().val) || parse.getCorrentToken().type == Token.T.IDE) {
+        if (firstFunc_stm.contains(parse.getCurrentToken().val) || parse.getCurrentToken().type == Token.T.IDE) {
             func_stm();
             func_stms();
         }
@@ -595,76 +617,75 @@ public class ParserController {
 
     private void func_stm() {
         follow = Arrays.asList("local", "}", "else", "return", "while", "id", "read", "global", "print", "{", "if");
-        if (parse.getCorrentToken().val.equals("if")) {
+        if (parse.getCurrentToken().val.equals("if")) {
             parse.nextToken();
-            if (!parse.getCorrentToken().val.equals("(")) {
+            if (!parse.getCurrentToken().val.equals("(")) {
                 parse.includeError("(");
             } else {
                 parse.nextToken();
             }
             log_expr();
-            if (parse.getCorrentToken().val.equals(")")) {
-                parse.nextToken();
-                if (!parse.getCorrentToken().val.equals("then")) {
-                    parse.includeError("then");
-                } else {
-                    parse.nextToken();
-                }
-                func_stm();
-                else_stm();
-                func_stm();
+            if (!parse.getCurrentToken().val.equals(")")) {
+                parse.includeError(")");
             } else {
-                follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ';', "global", "print", "{", "if");
-                parse.includeError(")", follow);
+                parse.nextToken();
             }
-        } else if (parse.getCorrentToken().val.equals("while")) {
+            if (!parse.getCurrentToken().val.equals("then")) {
+                parse.includeError("then");
+            } else {
+                parse.nextToken();
+            }
+            func_stm();
+            else_stm();
+            func_stm();
+        } else if (parse.getCurrentToken().val.equals("while")) {
             parse.nextToken();
-            if (!parse.getCorrentToken().val.equals("(")) {
+            if (!parse.getCurrentToken().val.equals("(")) {
                 parse.includeError("(");
             } else {
                 parse.nextToken();
             }
             log_expr();
-            if (parse.getCorrentToken().val.equals(")")) {
+            if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
                 func_stm();
             } else {
                 follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ";", "global", "print", "{", "if");
                 parse.includeError("), IDE, NRO, LOG, ART, REL, DEL, CAD", follow);
             }
-        } else if (parse.getCorrentToken().val.equals("{")
-                || parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")
-                || parse.getCorrentToken().val.equals("print")
-                || parse.getCorrentToken().val.equals("read")
-                || parse.getCorrentToken().val.equals("return")
-                || parse.getCorrentToken().val.equals(";")
-                || parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (parse.getCurrentToken().val.equals("{")
+                || parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")
+                || parse.getCurrentToken().val.equals("print")
+                || parse.getCurrentToken().val.equals("read")
+                || parse.getCurrentToken().val.equals("return")
+                || parse.getCurrentToken().val.equals(";")
+                || parse.getCurrentToken().type == Token.T.IDE) {
             func_normal_stm();
         }
     }
 
     private void func_normal_stm() {
 
-        if (parse.getCorrentToken().val.equals("{")) {
+        if (parse.getCurrentToken().val.equals("{")) {
             parse.nextToken();
             func_stms();
-            if (parse.getCorrentToken().val.equals("}")) {
+            if (parse.getCurrentToken().val.equals("}")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ";", "global", "print", "{", "if");
                 parse.includeError("}", follow);
             }
-        } else if (first_var_stm.contains(parse.getCorrentToken().val)
-                || parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (first_var_stm.contains(parse.getCurrentToken().val)
+                || parse.getCurrentToken().type == Token.T.IDE) {
             var_stm();
 
-        } else if (parse.getCorrentToken().val.equals(";")) {
+        } else if (parse.getCurrentToken().val.equals(";")) {
             parse.nextToken();
-        } else if (parse.getCorrentToken().val.equals("return")) {
+        } else if (parse.getCurrentToken().val.equals("return")) {
             parse.nextToken();
             expr();
-            if (parse.getCorrentToken().val.equals(";")) {
+            if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("local", "}", "else", "return", "while", "IDE", "read", ";", "global", "print", "{", "if");
@@ -674,28 +695,28 @@ public class ParserController {
     }
 
     private void else_stm() {
-        if (parse.getCorrentToken().val.equals("else")) {
+        if (parse.getCurrentToken().val.equals("else")) {
             parse.nextToken();
         }
     }
 
     private void var_stm() {
-        if (parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")) {
+        if (parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")) {
             stm_scope();
-        } else if (parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
             stm_id();
-        } else if (parse.getCorrentToken().val.equals("read")
-                || parse.getCorrentToken().val.equals("print")) {
+        } else if (parse.getCurrentToken().val.equals("read")
+                || parse.getCurrentToken().val.equals("print")) {
             parse.nextToken();
-            if (parse.getCorrentToken().val.equals("(")) {
+            if (parse.getCurrentToken().val.equals("(")) {
                 parse.nextToken();
                 args();
                 follow = Arrays.asList(";");
-                if (parse.getCorrentToken().val.equals(")")) {
+                if (parse.getCurrentToken().val.equals(")")) {
                     parse.nextToken();
-                    if (parse.getCorrentToken().val.equals(";")) {
+                    if (parse.getCurrentToken().val.equals(";")) {
                         parse.nextToken();
                     } else {
                         follow = Arrays.asList(";", "return", "else", "IDE", "global",
@@ -716,17 +737,18 @@ public class ParserController {
     }
 
     private void decl_atribute() {
-        if (parse.getCorrentToken().val.equals("{")) {
+        if (parse.getCurrentToken().val.equals("{")) {
             array_decl();
-        } else if (parse.getCorrentToken().type == Token.T.LOG
-                || parse.getCorrentToken().type == Token.T.IDE
-                || parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().type == Token.T.ART
-                || parse.getCorrentToken().type == Token.T.CAD
-                || parse.getCorrentToken().val.equals("!")
-                || parse.getCorrentToken().val.equals("(")
-                || parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")) {
+        } else if (parse.getCurrentToken().type == Token.T.LOG
+                || parse.getCurrentToken().type == Token.T.IDE
+                || parse.getCurrentToken().type == Token.T.INT
+                || parse.getCurrentToken().type == Token.T.REAL
+                || parse.getCurrentToken().type == Token.T.ART
+                || parse.getCurrentToken().type == Token.T.CAD
+                || parse.getCurrentToken().val.equals("!")
+                || parse.getCurrentToken().val.equals("(")
+                || parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")) {
             expr();
         } else {
             follow = Arrays.asList(";");
@@ -736,17 +758,17 @@ public class ParserController {
     }
 
     private void arrays() {
-        if (parse.getCorrentToken().val.equals("[")) {
+        if (parse.getCurrentToken().val.equals("[")) {
             array();
             arrays();
         }
     }
 
     private void array() {
-        if (parse.getCorrentToken().val.equals("[")) {
+        if (parse.getCurrentToken().val.equals("[")) {
             parse.nextToken();
             index();
-            if (parse.getCorrentToken().val.equals("]")) {
+            if (parse.getCurrentToken().val.equals("]")) {
                 parse.nextToken();
             }
         }
@@ -754,22 +776,23 @@ public class ParserController {
 //incompleta
 
     private void index() {
-        if (parse.getCorrentToken().type == Token.T.LOG
-                || parse.getCorrentToken().type == Token.T.IDE
-                || parse.getCorrentToken().type == Token.T.ART
-                || parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().type == Token.T.CAD
-                || parse.getCorrentToken().val.equals("!")
-                || parse.getCorrentToken().val.equals("(")) {
+        if (parse.getCurrentToken().type == Token.T.LOG
+                || parse.getCurrentToken().type == Token.T.IDE
+                || parse.getCurrentToken().type == Token.T.ART
+                || parse.getCurrentToken().type == Token.T.INT
+                || parse.getCurrentToken().type == Token.T.REAL
+                || parse.getCurrentToken().type == Token.T.CAD
+                || parse.getCurrentToken().val.equals("!")
+                || parse.getCurrentToken().val.equals("(")) {
             expr();
         }
     }
 
     private void array_decl() {
-        if (parse.getCorrentToken().val.equals("{")) {
+        if (parse.getCurrentToken().val.equals("{")) {
             parse.nextToken();
             array_def();
-            if (parse.getCorrentToken().val.equals("}")) {
+            if (parse.getCurrentToken().val.equals("}")) {
                 parse.nextToken();
                 array_vector();
             } else {
@@ -780,7 +803,7 @@ public class ParserController {
     }
 
     private void array_vector() {
-        if (parse.getCorrentToken().val.equals(",")) {
+        if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
             array_decl();
         }
@@ -792,7 +815,7 @@ public class ParserController {
     }
 
     private void array_expr() {
-        if (parse.getCorrentToken().val.equals(",")) {
+        if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
             array_def();
         }
@@ -808,7 +831,7 @@ public class ParserController {
     }
 
     private void or_() {
-        if (parse.getCorrentToken().val.equals("||")) {
+        if (parse.getCurrentToken().val.equals("||")) {
             parse.nextToken();
             and();
             or_();
@@ -821,7 +844,7 @@ public class ParserController {
     }
 
     private void and_() {
-        if (parse.getCorrentToken().val.equals("&&")) {
+        if (parse.getCurrentToken().val.equals("&&")) {
             parse.nextToken();
             equate();
             and_();
@@ -834,7 +857,7 @@ public class ParserController {
     }
 
     private void equate_() {
-        if (parse.getCorrentToken().val.equals("==") || parse.getCorrentToken().val.equals("!=")) {
+        if (parse.getCurrentToken().val.equals("==") || parse.getCurrentToken().val.equals("!=")) {
             parse.nextToken();
             compare();
             equate_();
@@ -847,7 +870,7 @@ public class ParserController {
     }
 
     private void compare_() {
-        if (parse.getCorrentToken().type == Token.T.REL) {
+        if (parse.getCurrentToken().type == Token.T.REL) {
             parse.nextToken();
             add();
             compare_();
@@ -860,8 +883,8 @@ public class ParserController {
     }
 
     private void add_() {
-        if (parse.getCorrentToken().val.equals("+")
-                || parse.getCorrentToken().val.equals("-")) {
+        if (parse.getCurrentToken().val.equals("+")
+                || parse.getCurrentToken().val.equals("-")) {
             parse.nextToken();
             mult();
             add_();
@@ -874,7 +897,7 @@ public class ParserController {
     }
 
     private void mult_() {
-        if (parse.getCorrentToken().val.equals("*") || parse.getCorrentToken().val.equals("/")) {
+        if (parse.getCurrentToken().val.equals("*") || parse.getCurrentToken().val.equals("/")) {
             parse.nextToken();
             unary();
             mult_();
@@ -882,7 +905,7 @@ public class ParserController {
     }
 
     private void unary() {
-        if (parse.getCorrentToken().val.equals("!")) {
+        if (parse.getCurrentToken().val.equals("!")) {
             parse.nextToken();
             unary();
         } else {
@@ -891,27 +914,28 @@ public class ParserController {
     }
 
     private void value() {
-        if (parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().type == Token.T.CAD
-                || parse.getCorrentToken().type == Token.T.LOG) {
+        if (parse.getCurrentToken().type == Token.T.INT
+                || parse.getCurrentToken().type == Token.T.REAL
+                || parse.getCurrentToken().type == Token.T.CAD
+                || parse.getCurrentToken().type == Token.T.LOG) {
             parse.nextToken();
-        } else if (parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")) {
+        } else if (parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")) {
             parse.nextToken();
             access();
-        } else if (parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
             id_value();
-        } else if (parse.getCorrentToken().val.equals("(")) {
+        } else if (parse.getCurrentToken().val.equals("(")) {
             parse.nextToken();
             expr();
-            if (parse.getCorrentToken().val.equals(")")) {
+            if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("*", "}", "]", "<", "-", "<=", ">", "!=", "/", "&&", "||", ">=", ";", ")", "+", ",", "==");
                 parse.includeError(")", follow);
             }
-        } else if (parse.getCorrentToken().val.equals("true") || parse.getCorrentToken().val.equals("false")) {
+        } else if (parse.getCurrentToken().val.equals("true") || parse.getCurrentToken().val.equals("false")) {
             parse.nextToken();
         } else {
             follow = Arrays.asList("*", "}", "]", "<", "-", "<=", ">", "!=", "/", "&&", "||", ">=", ";", ")", "+", ",", "==");
@@ -920,14 +944,14 @@ public class ParserController {
     }
 
     private void id_value() {
-        if (parse.getCorrentToken().val.equals("[")
-                || parse.getCorrentToken().val.equals(".")) {
+        if (parse.getCurrentToken().val.equals("[")
+                || parse.getCurrentToken().val.equals(".")) {
             arrays();
             accesses();
-        } else if (parse.getCorrentToken().val.equals("(")) {
+        } else if (parse.getCurrentToken().val.equals("(")) {
             parse.nextToken();
             args();
-            if (parse.getCorrentToken().val.equals(")")) {
+            if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList("*", "}", "]", "<", "-", "<=", ">", "!=", "/", "&&", "||", ">=", ";", ")", "+", ",", "==");
@@ -937,20 +961,21 @@ public class ParserController {
     }
 
     private void args() {
-        if (parse.getCorrentToken().type == Token.T.LOG
-                || parse.getCorrentToken().type == Token.T.IDE
-                || parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().type == Token.T.CAD
-                || parse.getCorrentToken().type == Token.T.ART
-                || parse.getCorrentToken().val.equals("!")
-                || parse.getCorrentToken().val.equals("(")) {
+        if (parse.getCurrentToken().type == Token.T.LOG
+                || parse.getCurrentToken().type == Token.T.IDE
+                || parse.getCurrentToken().type == Token.T.INT
+                || parse.getCurrentToken().type == Token.T.REAL
+                || parse.getCurrentToken().type == Token.T.CAD
+                || parse.getCurrentToken().type == Token.T.ART
+                || parse.getCurrentToken().val.equals("!")
+                || parse.getCurrentToken().val.equals("(")) {
             expr();
             args_list();
         }
     }
 
     private void args_list() {
-        if (parse.getCorrentToken().val.equals(",")) {
+        if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
             expr();
             args_list();
@@ -958,9 +983,9 @@ public class ParserController {
     }
 
     private void access() {
-        if (parse.getCorrentToken().val.equals(".")) {
+        if (parse.getCurrentToken().val.equals(".")) {
             parse.nextToken();
-            if (parse.getCorrentToken().type == Token.T.IDE) {
+            if (parse.getCurrentToken().type == Token.T.IDE) {
                 parse.nextToken();
                 arrays();
             }
@@ -971,7 +996,7 @@ public class ParserController {
     }
 
     private void accesses() {
-        if (parse.getCorrentToken().val.equals(".")) {
+        if (parse.getCurrentToken().val.equals(".")) {
             access();
             accesses();
         }
@@ -987,7 +1012,7 @@ public class ParserController {
     }
 
     private void log_or_() {
-        if (parse.getCorrentToken().val.equals("||")) {
+        if (parse.getCurrentToken().val.equals("||")) {
             parse.nextToken();
             log_and();
             log_or_();
@@ -1000,7 +1025,7 @@ public class ParserController {
     }
 
     private void log_and_() {
-        if (parse.getCorrentToken().val.equals("&&")) {
+        if (parse.getCurrentToken().val.equals("&&")) {
             parse.nextToken();
             log_equate();
             log_and_();
@@ -1013,8 +1038,8 @@ public class ParserController {
     }
 
     private void log_equate_() {
-        if (parse.getCorrentToken().val.equals("==")
-                || parse.getCorrentToken().val.equals("!=")) {
+        if (parse.getCurrentToken().val.equals("==")
+                || parse.getCurrentToken().val.equals("!=")) {
             parse.nextToken();
             log_compare();
             log_equate_();
@@ -1027,10 +1052,10 @@ public class ParserController {
     }
 
     private void log_compare_() {
-        if (parse.getCorrentToken().val.equals("<")
-                || parse.getCorrentToken().val.equals(">")
-                || parse.getCorrentToken().val.equals(">=")
-                || parse.getCorrentToken().val.equals("<=")) {
+        if (parse.getCurrentToken().val.equals("<")
+                || parse.getCurrentToken().val.equals(">")
+                || parse.getCurrentToken().val.equals(">=")
+                || parse.getCurrentToken().val.equals("<=")) {
             parse.nextToken();
             log_unary();
             log_compare_();
@@ -1038,38 +1063,40 @@ public class ParserController {
     }
 
     private void log_unary() {
-        if (parse.getCorrentToken().val.equals("!")) {
+        if (parse.getCurrentToken().val.equals("!")) {
             parse.nextToken();
             log_unary();
-        } else if (parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().type == Token.T.IDE
-                || parse.getCorrentToken().type == Token.T.CAD
-                || parse.getCorrentToken().val.equals("false")
-                || parse.getCorrentToken().val.equals("true")
-                || parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")
-                || parse.getCorrentToken().val.equals("(")) {
+        } else if (parse.getCurrentToken().type == Token.T.INT
+                || parse.getCurrentToken().type == Token.T.REAL
+                || parse.getCurrentToken().type == Token.T.IDE
+                || parse.getCurrentToken().type == Token.T.CAD
+                || parse.getCurrentToken().val.equals("false")
+                || parse.getCurrentToken().val.equals("true")
+                || parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")
+                || parse.getCurrentToken().val.equals("(")) {
             log_value();
         }
     }
 
     private void log_value() {
-        if (parse.getCorrentToken().type == Token.T.NRO
-                || parse.getCorrentToken().val.equals("false")
-                || parse.getCorrentToken().val.equals("true")
-                || parse.getCorrentToken().type == Token.T.CAD) {
+        if (parse.getCurrentToken().type == Token.T.INT
+                || parse.getCurrentToken().type == Token.T.REAL
+                || parse.getCurrentToken().val.equals("false")
+                || parse.getCurrentToken().val.equals("true")
+                || parse.getCurrentToken().type == Token.T.CAD) {
             parse.nextToken();
-        } else if (parse.getCorrentToken().val.equals("local")
-                || parse.getCorrentToken().val.equals("global")) {
+        } else if (parse.getCurrentToken().val.equals("local")
+                || parse.getCurrentToken().val.equals("global")) {
             parse.nextToken();
             access();
-        } else if (parse.getCorrentToken().type == Token.T.IDE) {
+        } else if (parse.getCurrentToken().type == Token.T.IDE) {
             parse.nextToken();
             id_value();
-        } else if (parse.getCorrentToken().val.equals("(")) {
+        } else if (parse.getCurrentToken().val.equals("(")) {
             parse.nextToken();
             log_expr();
-            if (parse.getCorrentToken().val.equals(")")) {
+            if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
             } else {
                 follow = Arrays.asList(")");
