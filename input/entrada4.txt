@@ -1,23 +1,48 @@
-// Teste 2 - Numeros 
+/*
+ * Duplicidade de funções/procedimentos (sobrecarga)
+ */
 
-var
-{
-	int inteiro;
-	int a;
-	real numero_real;
-	real numero_real2;
+procedure teste() {}
+
+procedure p(int a) {}
+
+procedure p(int a[]) {}
+
+procedure p(string a, real b) {}
+
+procedure p(string nome[], real b) {}
+
+procedure p(real a, int b) {}
+
+procedure teste() {} //erro
+
+procedure testes() {}
+
+procedure p(int x, real y) {}
+
+function int f() { return 1; }
+
+function real f() { return 1.1; } //erro
+
+function boolean f(real a) { return false; }
+
+function int f(real a) { return 1; } //erro
+
+function string f(string a) { return ""; }
+
+function string f(string a[]) { return "hello world"; }
+
+function real f() { return 1.2; } //erro
+
+function string f(real a) { return "test"; } //erro
+
+procedure start() {
+	a = f();
+	f(1.1);
+	f("teste");
+	f(true);
+	f(true, false, false, false); // Erro 
+
 }
 
-procedure start()
-{
-
-    inteiro = 1;
-    a = 1.1 ;
-    numero_real = 1.123456789
-    numero_real2 = 123456789.1
-
-    inteiro = .1;
-    a = 1.1_ ;
-    numero_real = 1.123456.789
-    numero_real2 = 1234@56789.1
-}
+procedure start() {} //erro eof

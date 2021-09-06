@@ -1,53 +1,110 @@
-3 PRE var
-4 DEL {
-5 PRE int
-5 IDE inteiro
-5 DEL ;
-6 PRE int
-6 IDE a
-6 DEL ;
-7 PRE real
-7 IDE numero_real
-7 DEL ;
-8 PRE real
-8 IDE numero_real2
-8 DEL ;
-9 DEL }
-11 ParserError start    Esperado: [procedure]
-11 ParserError start    Esperado: [procedure]    - Em Modo Pânico
-12 ParserError {    Esperado: [procedure]    - Em Modo Pânico
-14 ParserError inteiro    Esperado: [procedure]    - Em Modo Pânico
-14 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-14 ParserError 1    Esperado: [procedure]    - Em Modo Pânico
-14 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
-15 ParserError a    Esperado: [procedure]    - Em Modo Pânico
-15 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-15 ParserError 1.1    Esperado: [procedure]    - Em Modo Pânico
-15 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
-16 ParserError numero_real    Esperado: [procedure]    - Em Modo Pânico
-16 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-16 ParserError 1.123456789    Esperado: [procedure]    - Em Modo Pânico
-17 ParserError numero_real2    Esperado: [procedure]    - Em Modo Pânico
-17 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-17 ParserError 123456789.1    Esperado: [procedure]    - Em Modo Pânico
-19 ParserError inteiro    Esperado: [procedure]    - Em Modo Pânico
-19 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-19 ParserError 1    Esperado: [procedure]    - Em Modo Pânico
-19 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
-20 ParserError a    Esperado: [procedure]    - Em Modo Pânico
-20 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-20 ParserError 1.1    Esperado: [procedure]    - Em Modo Pânico
-20 ParserError ;    Esperado: [procedure]    - Em Modo Pânico
-21 ParserError numero_real    Esperado: [procedure]    - Em Modo Pânico
-21 ParserError =    Esperado: [procedure]    - Em Modo Pânico
-21 ParserError 1.123456    Esperado: [procedure]    - Em Modo Pânico
-21 ParserError .    Esperado: [procedure]    - Em Modo Pânico
-21 ParserError 789    Esperado: [procedure]    - Em Modo Pânico
-22 ParserError numero_real2    Esperado: [procedure]    - Em Modo Pânico
-22 ParserError =    Esperado: [procedure]    - Em Modo Pânico
+5 PRE  [ procedure ]   
+5 IDE  [ p ]   
+5 DEL  [ ( ]   
+5 PRE  [ int ]   
+5 IDE  [ x ]   
+5 DEL  [ , ]   
+5 PRE  [ real ]   
+5 IDE  [ y ]   
+5 DEL  [ ) ]   
+5 DEL  [ { ]   
+6 PRE  [ var ]   
+6 DEL  [ { ]   
+7 PRE  [ int ]   
+7 IDE  [ valor1 ]   
+7 DEL  [ , ]   
+7 IDE  [ valor2 ]   
+7 DEL  [ , ]   
+7 IDE  [ valor3 ]   
+7 DEL  [ ; ]   
+8 PRE  [ real ]   
+8 IDE  [ b ]   
+8 DEL  [ ; ]   
+9 PRE  [ string ]   
+9 SEMANTIC  [ valor1 ]   já existe valor declarado com o mesmo nome
+9 IDE  [ valor1 ]   
+9 DEL  [ , ]   
+9 SEMANTIC  [ valor2 ]   já existe valor declarado com o mesmo nome
+9 IDE  [ valor2 ]   
+9 DEL  [ ; ]   
+10 DEL  [ } ]   
+11 DEL  [ } ]   
+12 PRE  [ function ]   
+12 PRE  [ int ]   
+12 IDE  [ p ]   
+12 DEL  [ ( ]   
+12 PRE  [ int ]   
+12 IDE  [ x ]   
+12 DEL  [ , ]   
+12 PRE  [ real ]   
+12 IDE  [ y ]   
+12 SEMANTIC  [ ) ]   já existe uma função ou procedimento com a mesma assinatura
+12 DEL  [ ) ]   
+12 DEL  [ { ]   
+13 PRE  [ return ]   
+13 IDE  [ x ]   
+13 ART  [ + ]   
+13 INT  [ 1 ]   
+13 DEL  [ ; ]   
+14 DEL  [ } ]   
+16 PRE  [ function ]   
+16 PRE  [ int ]   
+16 IDE  [ f ]   
+16 DEL  [ ( ]   
+16 PRE  [ int ]   
+16 IDE  [ x ]   
+16 DEL  [ , ]   
+16 PRE  [ real ]   
+16 SEMANTIC  [ x ]   já existe valor declarado com o mesmo nome
+16 IDE  [ x ]   
+16 DEL  [ ) ]   
+16 DEL  [ { ]   
+17 PRE  [ var ]   
+17 DEL  [ { ]   
+18 PRE  [ string ]   
+18 IDE  [ nome ]   
+18 DEL  [ , ]   
+18 IDE  [ sobrenome ]   
+18 DEL  [ , ]   
+18 IDE  [ idade ]   
+18 DEL  [ ; ]   
+19 PRE  [ int ]   
+19 IDE  [ d ]   
+19 DEL  [ , ]   
+19 IDE  [ e ]   
+19 DEL  [ , ]   
+19 SEMANTIC  [ idade ]   já existe valor declarado com o mesmo nome
+19 IDE  [ idade ]   
+19 DEL  [ ; ]   
+20 DEL  [ } ]   
+22 PRE  [ return ]   
+22 IDE  [ e ]   
+22 DEL  [ ; ]   
+23 DEL  [ } ]   
+25 PRE  [ procedure ]   
+25 PRE  [ start ]   
+25 DEL  [ ( ]   
+25 DEL  [ ) ]   
+25 DEL  [ { ]   
+26 PRE  [ var ]   
+26 DEL  [ { ]   
+27 PRE  [ boolean ]   
+27 IDE  [ a ]   
+27 DEL  [ ; ]   
+28 PRE  [ int ]   
+28 IDE  [ b ]   
+28 DEL  [ ; ]   
+29 PRE  [ real ]   
+29 SEMANTIC  [ a ]   já existe valor declarado com o mesmo nome
+29 IDE  [ a ]   
+29 DEL  [ ; ]   
+30 DEL  [ } ]   
+31 DEL  [ } ]   
 
 
 -------------------------
 
-Arquivo contém 1 erros sintáticos (excluindo Modo Pânico)
+
+Arquivo contém 6 erros semânticos
+Sem erros sintaticos
 Arquivo sem erros léxicos

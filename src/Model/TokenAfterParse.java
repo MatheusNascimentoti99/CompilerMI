@@ -19,6 +19,10 @@ public class TokenAfterParse extends Token {
     public TokenAfterParse(Token token) {
         super(token.type, token.val, token.line);
     }
+    public TokenAfterParse(Token token, String expected, Token.T type) {
+        super(type, token.val, token.line);
+        this.expected = expected;
+    }
 
     public TokenAfterParse(Object val, int positionLine, String expected) {
         super(Token.T.ParserError, val, positionLine);
@@ -34,16 +38,18 @@ public class TokenAfterParse extends Token {
     @Override
     public String toString() {
         Formatter out = new Formatter();
-        out.format("%d %s", super.line, super.type);
+        out.format("%d %s ", super.line, super.type);
         if (val != null) {
-            out.format(" %s", super.val);
+            out.format(" [ %s ]   ", super.val);
         }
         if (super.type == Token.T.ParserError) {
             out.format("    Esperado: %s", expected);
         }
+        if (super.type == Token.T.SEMANTIC) {
+            out.format(expected);
+        }
         if (panic) {
             out.format("    - Em Modo Pânico");
-
         }
 
         return out.toString();

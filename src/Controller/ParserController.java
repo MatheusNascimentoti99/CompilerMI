@@ -24,11 +24,14 @@ public class ParserController {
 
     private static final String ERROR_ESCAPE = "já existe valor declarado com o mesmo nome";
     private static final String ERROR_UNDEFINED = "o valor não está definido";
+    private static final String ERROR_UNDEFINED_METHOD = "o método não está definido";
     private static final String ERROR_CONST = "não é possível alterar constante";
     private static final String ERROR_CASHING = "operação com tipos diferentes";
     private static final String ERROR_ARRAY = "o valor não espera um array";
     private static final String ERROR_DECLMETHOD = "já existe uma função ou procedimento com a mesma assinatura";
     private static final String ERROR_INDEX = "O valor não é um inteiro";
+    private static final String ERROR_RETURN = "Tipo diferente da assinatura da função";
+
     private final List types = Arrays.asList("int", "real", "boolean", "string", "struct");
     private final Parser parse;
     List firstFunc_stm = Arrays.asList("if", "while", "{", "return", ";", "local", "global", "print", "read");
@@ -419,7 +422,10 @@ public class ParserController {
         if (parse.getCurrentToken().val.equals("local") || parse.getCurrentToken().val.equals("global")) {
             Token aux = parse.getCurrentToken();
             parse.nextToken();
+            tableController.isLeftSide = true;
             accesses(aux);
+            tableController.isLeftSide = false;
+
             assign(aux);
         }
     }
@@ -507,6 +513,7 @@ public class ParserController {
                 parse.includeError(ERROR_CONST, token, Token.T.SEMANTIC);
             }
             assign(token);
+
         } else if (parse.getCurrentToken().val.equals("[")) {
             if (!tableController.searchIDE(token)) {
                 parse.includeError(ERROR_UNDEFINED, token, Token.T.SEMANTIC);
@@ -516,6 +523,7 @@ public class ParserController {
             }
             array();
             arrays();
+
             accesses(token);
             assign(token);
         } else if (parse.getCurrentToken().val.equals(".")) {
@@ -532,6 +540,18 @@ public class ParserController {
             Function function = new Function();
             function.setName(token.val.toString());
             args(parse.getCurrentToken(), function);
+            if (token.type != Token.T.PRE) {
+                try {
+                    String type = tableController.getMethod(function).getType();
+                    tableController.setTypeExpr(type);
+                    tableController.typesExpr.add(type);
+                    if (!tableController.checkTypesExp()) {
+                        parse.includeError(ERROR_CASHING, Token.T.SEMANTIC);
+                    }
+                } catch (NullPointerException e) {
+                    parse.includeError(ERROR_UNDEFINED_METHOD, token, Token.T.SEMANTIC);
+                }
+            }
             if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
                 if (parse.getCurrentToken().val.equals(";")) {
@@ -785,9 +805,17 @@ public class ParserController {
         } else if (parse.getCurrentToken().val.equals(";")) {
             parse.nextToken();
         } else if (parse.getCurrentToken().val.equals("return")) {
+            Token token = parse.getCurrentToken();
             parse.nextToken();
             tableController.newExpr();
             expr(parse.getCurrentToken());
+            try {
+                if (!tableController.function.getType().equals(tableController.typeExpr)) {
+                    parse.includeError(ERROR_RETURN, token, Token.T.SEMANTIC);
+                }
+            } catch (NullPointerException e) {
+                parse.includeError(ERROR_RETURN, token, Token.T.SEMANTIC);
+            }
             if (parse.getCurrentToken().val.equals(";")) {
                 parse.nextToken();
             } else {
@@ -822,6 +850,13 @@ public class ParserController {
                 follow = Arrays.asList(";");
                 if (parse.getCurrentToken().val.equals(")")) {
                     parse.nextToken();
+                    if (token.type != Token.T.PRE) {
+                        try {
+                            String type = tableController.getMethod(function).getType();
+                        } catch (NullPointerException e) {
+                            parse.includeError(ERROR_UNDEFINED_METHOD, token, Token.T.SEMANTIC);
+                        }
+                    }
                     if (parse.getCurrentToken().val.equals(";")) {
                         parse.nextToken();
                     } else {
@@ -845,8 +880,7 @@ public class ParserController {
     private void decl_atribute() {
         if (parse.getCurrentToken().val.equals("{")) {
             array_decl(parse.getCurrentToken());
-        } else if (parse.getCurrentToken().type == Token.T.LOG
-                || parse.getCurrentToken().type == Token.T.IDE
+        } else if (parse.getCurrentToken().type == Token.T.IDE
                 || parse.getCurrentToken().type == Token.T.INT
                 || parse.getCurrentToken().type == Token.T.REAL
                 || parse.getCurrentToken().type == Token.T.ART
@@ -854,19 +888,11 @@ public class ParserController {
                 || parse.getCurrentToken().val.equals("!")
                 || parse.getCurrentToken().val.equals("(")
                 || parse.getCurrentToken().val.equals("local")
-                || parse.getCurrentToken().val.equals("global")) {
+                || parse.getCurrentToken().val.equals("global")
+                || parse.getCurrentToken().val.equals("true")
+                || parse.getCurrentToken().val.equals("false")) {
             tableController.newExpr();
             expr(parse.getCurrentToken());
-            try {
-                String type = tableController.getTypeVar(parse.getCurrentToken());
-                tableController.setTypeExpr(type);
-                tableController.typesExpr.add(type);
-                if (!tableController.checkTypesExp()) {
-                    parse.includeError(ERROR_CASHING, Token.T.SEMANTIC);
-                }
-            } catch (NullPointerException e) {
-                parse.includeError(ERROR_UNDEFINED, Token.T.SEMANTIC);
-            }
         } else {
             follow = Arrays.asList(";");
             parse.includeError("{, (, NRO, IDE, CAD", follow);
@@ -896,7 +922,8 @@ public class ParserController {
 //incompleta
 
     private void index() {
-        if (parse.getCurrentToken().type == Token.T.LOG
+        if (parse.getCurrentToken().val.toString().equals("true")
+                || parse.getCurrentToken().val.toString().equals("false")
                 || parse.getCurrentToken().type == Token.T.IDE
                 || parse.getCurrentToken().type == Token.T.ART
                 || parse.getCurrentToken().type == Token.T.INT
@@ -905,9 +932,10 @@ public class ParserController {
                 || parse.getCurrentToken().val.equals("!")
                 || parse.getCurrentToken().val.equals("(")) {
             tableController.newExpr();
+            Token token = parse.getCurrentToken();
             expr(parse.getCurrentToken());
             try {
-                String type = tableController.getTypeVar(parse.getCurrentToken());
+                String type = tableController.getTypeVar(token);
                 tableController.setTypeExpr(type);
                 tableController.typesExpr.add(type);
                 if (!tableController.checkTypesExp()) {
@@ -1074,7 +1102,8 @@ public class ParserController {
         if (parse.getCurrentToken().type == Token.T.INT
                 || parse.getCurrentToken().type == Token.T.REAL
                 || parse.getCurrentToken().type == Token.T.CAD
-                || parse.getCurrentToken().type == Token.T.LOG) {
+                || parse.getCurrentToken().val.toString().equals("true")
+                || parse.getCurrentToken().val.toString().equals("false")) {
             try {
                 String type = tableController.getTypeVar(parse.getCurrentToken());
                 tableController.setTypeExpr(type);
@@ -1147,16 +1176,18 @@ public class ParserController {
             Function function = new Function();
             function.setName(token.val.toString());
             parse.nextToken();
-            args(token, function);
-            try {
-                String type = tableController.getMethod(function).getType();
-                tableController.setTypeExpr(type);
-                tableController.typesExpr.add(type);
-                if (!tableController.checkTypesExp()) {
-                    parse.includeError(ERROR_CASHING, Token.T.SEMANTIC);
+            args(parse.getCurrentToken(), function);
+            if (token.type != Token.T.PRE) {
+                try {
+                    String type = tableController.getMethod(function).getType();
+                    tableController.setTypeExpr(type);
+                    tableController.typesExpr.add(type);
+                    if (!tableController.checkTypesExp()) {
+                        parse.includeError(ERROR_CASHING, Token.T.SEMANTIC);
+                    }
+                } catch (NullPointerException e) {
+                    parse.includeError(ERROR_UNDEFINED_METHOD, token, Token.T.SEMANTIC);
                 }
-            } catch (NullPointerException e) {
-                parse.includeError(ERROR_UNDEFINED, token, Token.T.SEMANTIC);
             }
             if (parse.getCurrentToken().val.equals(")")) {
                 parse.nextToken();
@@ -1183,8 +1214,9 @@ public class ParserController {
         }
     }
 
-    private void args(Token token, Function function) {
-        if (parse.getCurrentToken().type == Token.T.LOG
+    private void args(Token token, Method function) {
+        if (parse.getCurrentToken().val.toString().equals("true")
+                || parse.getCurrentToken().val.toString().equals("false")
                 || parse.getCurrentToken().type == Token.T.IDE
                 || parse.getCurrentToken().type == Token.T.INT
                 || parse.getCurrentToken().type == Token.T.REAL
@@ -1194,7 +1226,7 @@ public class ParserController {
                 || parse.getCurrentToken().val.equals("(")) {
             expr(token);
             try {
-                String type = tableController.getTypeVar(parse.getCurrentToken());
+                String type = tableController.getTypeVar(token);
                 tableController.setTypeExpr(type);
                 tableController.typesExpr.add(type);
                 if (!tableController.checkTypesExp()) {
@@ -1209,12 +1241,13 @@ public class ParserController {
         }
     }
 
-    private void args_list(Token token, Function function) {
+    private void args_list(Token token, Method function) {
         if (parse.getCurrentToken().val.equals(",")) {
             parse.nextToken();
-            expr(token);
+            Token aux = parse.getCurrentToken();
+            expr(aux);
             try {
-                String type = tableController.getTypeVar(parse.getCurrentToken());
+                String type = tableController.getTypeVar(aux);
                 tableController.setTypeExpr(type);
                 tableController.typesExpr.add(type);
                 if (!tableController.checkTypesExp()) {
@@ -1236,6 +1269,7 @@ public class ParserController {
 
             if (parse.getCurrentToken().type == Token.T.IDE) {
                 if (!token.val.equals("local") && !token.val.equals("global")) {
+
                     try {
                         var = tableController.getAccessOfVar(token).getVarTable().get(parse.getCurrentToken());
                         if (var == null) {
@@ -1253,9 +1287,13 @@ public class ParserController {
                         var = tableController.getVarLocalTable().get(parse.getCurrentToken());
                     } else if (token.val.equals("global")) {
                         var = tableController.getVarGlobal(parse.getCurrentToken());
+                        if (tableController.isLeftSide && tableController.getConstTable().get(parse.getCurrentToken()) != null) {
+                            parse.includeError(ERROR_CONST, Token.T.SEMANTIC);
+                        }
                     }
+
                     try {
-                        if (tableController.getTypeExpr().equals(var.getType())) {
+                        if (tableController.isLeftSide || tableController.getTypeExpr().equals(var.getType())) {
                         } else {
                             parse.includeError(ERROR_CASHING, parse.getCurrentToken(), Token.T.SEMANTIC);
                         }
@@ -1367,8 +1405,9 @@ public class ParserController {
             parse.nextToken();
         } else if (parse.getCurrentToken().val.equals("local")
                 || parse.getCurrentToken().val.equals("global")) {
+            Token token = parse.getCurrentToken();
             parse.nextToken();
-            access(parse.getCurrentToken());
+            access(token);
         } else if (parse.getCurrentToken().type == Token.T.IDE) {
             id_value(parse.nextToken());
         } else if (parse.getCurrentToken().val.equals("(")) {

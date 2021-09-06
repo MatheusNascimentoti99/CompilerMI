@@ -1,125 +1,81 @@
-1 PRE struct
-1 IDE structTest
-1 DEL {
-2 PRE const
-2 DEL {
-3 IDE a
-3 ParserError [    Esperado: [IDE]
-3 ParserError [    Esperado: [IDE]    - Em Modo Pânico
-3 ParserError 3    Esperado: [IDE]    - Em Modo Pânico
-3 ParserError ]    Esperado: [IDE]    - Em Modo Pânico
-3 ParserError [    Esperado: [IDE]    - Em Modo Pânico
-3 ParserError 10    Esperado: [IDE]    - Em Modo Pânico
-3 ParserError ]    Esperado: [IDE]    - Em Modo Pânico
-3 REL =
-3 DEL {
-3 NRO 3
-3 DEL ,
-3 NRO 3
-3 DEL ,
-3 NRO 99
-3 DEL ,
-3 IDE teste
-3 DEL (
-3 DEL )
-3 DEL }
-3 DEL ,
-3 DEL {
-3 IDE a
-3 REL >
-3 NRO 9
-3 DEL ,
-3 NRO 10
-3 DEL }
-3 DEL ;
-4 DEL }
-5 PRE var
-5 DEL {
-6 PRE int
-6 SIB @
-6 IDE teste
-6 DEL ;
-7 IDE varStringStruct
-7 ParserError ;    Esperado: [--,  (,  .,  =,  ++,  [,  IDE]
-7 ParserError ;    Esperado: [--,  (,  .,  =,  ++,  [,  IDE]    - Em Modo Pânico
-8 DEL }
-11 ParserError var    Esperado: [}]
-11 PRE var
-11 DEL {
-12 PRE int
-12 IDE varInt1
-12 DEL ,
-12 IDE varInt2
-12 DEL ;
-13 PRE real
-13 IDE varReal
-13 DEL ;
-14 PRE string
-14 IDE varString
-14 DEL ;
-15 PRE struct
-15 IDE structDois
-15 IDE s1
-15 DEL ;
-16 DEL }
-18 PRE procedure
-18 PRE start
-18 DEL (
-18 DEL )
-18 DEL {
-19 PRE var
-19 DEL {
-20 PRE int
-20 IDE varInt1
-20 DEL ;
-21 DEL }
-22 IDE teste
-22 DEL [
-22 NRO 9
-22 DEL ]
-22 REL =
-22 NRO 77
-22 DEL ;
-24 DEL }
-26 PRE function
-26 PRE boolean
-26 IDE teste
-26 DEL (
-26 PRE int
-26 IDE a
-26 DEL ,
-26 PRE int
-26 IDE b
-26 DEL [
-26 DEL ]
-26 DEL )
-26 DEL {
-27 IDE a
-27 REL =
-27 IDE b
-27 DEL [
-27 IDE g
-27 ART +
-27 IDE g
-27 ART /
-27 NRO 4
-27 DEL ]
-27 ART *
-27 NRO 22.5
-27 ART -
-27 DEL (
-27 NRO 4
-27 ART +
-27 NRO 5
-27 DEL )
-27 DEL ;
-28 PRE return
-28 IDE a
-28 DEL ;
-29 DEL }
+5 PRE  [ const ]   
+5 DEL  [ { ]   
+6 PRE  [ real ]   
+6 IDE  [ a_ ]   
+6 REL  [ = ]   
+6 INT  [ 6 ]   
+6 DEL  [ ; ]   
+7 PRE  [ boolean ]   
+7 IDE  [ c ]   
+7 REL  [ = ]   
+7 INT  [ 6 ]   
+7 DEL  [ ; ]   
+8 PRE  [ int ]   
+8 IDE  [ d ]   
+8 REL  [ = ]   
+8 INT  [ 6 ]   
+8 DEL  [ ; ]   
+9 DEL  [ } ]   
+11 PRE  [ var ]   
+11 DEL  [ { ]   
+12 PRE  [ int ]   
+12 SEMANTIC  [ a_ ]   já existe valor declarado com o mesmo nome
+12 IDE  [ a_ ]   
+12 DEL  [ ; ]   
+13 PRE  [ string ]   
+13 IDE  [ b ]   
+13 DEL  [ ; ]   
+14 PRE  [ real ]   
+14 SEMANTIC  [ d ]   já existe valor declarado com o mesmo nome
+14 IDE  [ d ]   
+14 DEL  [ ; ]   
+15 DEL  [ } ]   
+17 PRE  [ function ]   
+17 PRE  [ real ]   
+17 IDE  [ soma ]   
+17 DEL  [ ( ]   
+17 DEL  [ ) ]   
+17 DEL  [ { ]   
+18 PRE  [ var ]   
+18 DEL  [ { ]   
+19 PRE  [ boolean ]   
+19 IDE  [ a_ ]   
+19 DEL  [ ; ]   
+20 PRE  [ int ]   
+20 IDE  [ c ]   
+20 DEL  [ ; ]   
+21 PRE  [ real ]   
+21 IDE  [ d ]   
+21 DEL  [ ; ]   
+22 DEL  [ } ]   
+24 PRE  [ return ]   
+24 IDE  [ c ]   
+24 SEMANTIC  [ return ]   Tipo diferente da assinatura da função
+24 DEL  [ ; ]   
+25 DEL  [ } ]   
+27 PRE  [ procedure ]   
+27 PRE  [ start ]   
+27 DEL  [ ( ]   
+27 DEL  [ ) ]   
+27 DEL  [ { ]   
+28 PRE  [ var ]   
+28 DEL  [ { ]   
+29 PRE  [ boolean ]   
+29 IDE  [ b ]   
+29 DEL  [ ; ]   
+30 PRE  [ int ]   
+30 IDE  [ c ]   
+30 DEL  [ ; ]   
+31 PRE  [ real ]   
+31 IDE  [ d ]   
+31 DEL  [ ; ]   
+32 DEL  [ } ]   
+33 DEL  [ } ]   
 
 
 -------------------------
 
-Arquivo contém 3 erros sintáticos (excluindo Modo Pânico)
-Arquivo contém 1 erros léxicos
+
+Arquivo contém 3 erros semânticos
+Sem erros sintaticos
+Arquivo sem erros léxicos

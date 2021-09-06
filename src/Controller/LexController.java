@@ -189,7 +189,7 @@ public final class LexController {
         }
         //Se depois do número não for um ponto, então finaliza a formação
         if (charactere != 46) {
-            tokens.add(new Token(Token.T.NRO, buffer, position));
+            tokens.add(new Token(Token.T.INT, buffer, position));
             buffer = new String();
         } else {
             Q5(); //Verifica o resto da formação se ouver ponto depois do número
@@ -324,7 +324,7 @@ public final class LexController {
             charactere = read();
         }
         if (hasNumber) { //Se  já houve um número após o ponto, então finaliza em um estado de aceitação
-            tokens.add(new Token(Token.T.NRO, buffer, position));
+            tokens.add(new Token(Token.T.REAL, buffer, position));
         } else {
             erros++;
             tokens.add(new Token(Token.T.NMF, buffer, position));

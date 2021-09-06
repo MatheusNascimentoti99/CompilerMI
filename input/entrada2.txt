@@ -1,23 +1,31 @@
-// Teste 2 - Numeros 
+/*
+ * Duplicidade de identificadores locais
+ */
 
-var
-{
-	int inteiro;
-	int a;
-	real numero_real;
-	real numero_real2;
+procedure p(int x, real y) {
+	var {
+		int valor1, valor2, valor3;
+		real b;
+		string valor1, valor2; //erro nas 2 variáveis
+	}
+}
+function int p(int x, real y) { //erro assinatura igual
+	return x + 1;
 }
 
-start
-{
+function int f(int x, real x) { //erro no x
+	var {
+		string nome, sobrenome, idade;
+		int d, e, idade;     //erro na idade
+	}
 
-	inteiro = 1;
-    a = 1.1 ;
-    numero_real = 1.123456789
-    numero_real2 = 123456789.1
+	return e;
+}
 
-    inteiro = 1;
-    a = 1.1 ;
-    numero_real = 1.123456.789
-    numero_real2 = 123456789.1
+procedure start() {
+	var {
+		boolean a; 
+		int b;
+		real a; //erro no a
+	}
 }

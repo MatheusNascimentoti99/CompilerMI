@@ -1,0 +1,30 @@
+/*
+ * Verificação de tipos (em atribuições, retorno de funções, expressões...)
+ */
+
+var {
+	boolean b;
+	int i;
+	real r;
+	string s;
+}
+
+procedure p() { return 0; } //erro em p
+
+procedure proc2 () { return true; } //erro em proc2
+
+function int fi() { return 2.0; } //erro em fi
+
+function int calcula_idade() {  } //erro em calcula_idade
+
+function boolean fs() { return "hello world"; } //erro em fs
+
+procedure start() {
+	b = proc2(); //erro
+	i = fi();
+	r = p(); //erro
+	s = fs(); //erro
+
+	return 42; //erro
+
+}

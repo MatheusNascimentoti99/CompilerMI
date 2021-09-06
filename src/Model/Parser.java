@@ -16,21 +16,27 @@ import java.util.List;
 public class Parser {
 
     private final LinkedList<Token> tokens;
-    private Token correntToken;
+    private Token currentToken;
     private Token nextToken;
     private int erros;
+    private int errosSem;
     private final LinkedList<TokenAfterParse> result;
 
     public Parser(LinkedList<Token> tokens) {
         erros = 0;
+        errosSem = 0;
         this.tokens = tokens;
-        correntToken = tokens.pollFirst();
+        currentToken = tokens.pollFirst();
         nextToken = tokens.pollFirst();
         result = new LinkedList<>();
     }
 
     public int erros() {
         return erros;
+    }
+    
+    public int errosSem() {
+        return errosSem;
     }
 
     public boolean hasErros() {
@@ -49,12 +55,12 @@ public class Parser {
         return nextToken;
     }
 
-    public Token getCorrentToken() {
+    public Token getCurrentToken() {
         try {
-            if (correntToken == null) {
+            if (currentToken == null) {
                 throw new NullPointerException();
             } else {
-                return correntToken;
+                return currentToken;
             }
         } catch (NullPointerException e) {
             int[] position = {-1, -1};
@@ -63,60 +69,82 @@ public class Parser {
     }
 
     public boolean equalsValue(String expected) {
-        return correntToken.val.equals(expected);
+        return currentToken.val.equals(expected);
     }
 
     public Token nextToken() {
         do {
-            result.addLast(new TokenAfterParse(correntToken));
-            correntToken = nextToken;
+            result.addLast(new TokenAfterParse(currentToken));
+            currentToken = nextToken;
             nextToken = tokens.pollFirst();
-        } while (correntToken != null && correntToken.isError());
-        return correntToken;
+        } while (currentToken != null && currentToken.isError());
+        return currentToken;
     }
 
     public Token nextToken(boolean include) {
         do {
             if (include) {
-                result.addLast(new TokenAfterParse(correntToken));
+                result.addLast(new TokenAfterParse(currentToken));
             }
-            correntToken = nextToken;
+            currentToken = nextToken;
             nextToken = tokens.pollFirst();
-        } while (correntToken != null && correntToken.isError());
+        } while (currentToken != null && currentToken.isError());
 
-        return correntToken;
+        return currentToken;
     }
 
     public void includeError(String expected) {
         erros++;
         String[] expecteds = expected.split(",");
-
         try {
-            result.addLast(new TokenAfterParse(correntToken.val, correntToken.line, Arrays.toString(expecteds)));
+            result.addLast(new TokenAfterParse(currentToken.val, currentToken.line, Arrays.toString(expecteds)));
 
         } catch (NullPointerException e) {
-            result.addLast(new TokenAfterParse(correntToken.val, -1, Arrays.toString(expecteds)));
+            Token errorParseEOF = new Token(Token.T.EOF, "EOF", -1);
+            result.addLast(new TokenAfterParse(errorParseEOF.val, -1, Arrays.toString(expecteds)));
         }
-//goNextToken(false);
+    }
+
+    public void includeError(String expected, Token.T type) {
+        if (type != Token.T.SEMANTIC) {
+            erros++;
+        } else {
+            errosSem++;
+        }
+        result.addLast(new TokenAfterParse(currentToken, expected, type));
+    }
+
+    public void includeError(String expected, Token token, Token.T type) {
+        if (type != Token.T.SEMANTIC) {
+            erros++;
+        } else {
+            errosSem++;
+        }
+        result.addLast(new TokenAfterParse(token, expected, type));
     }
 
     public void includeError(String expected, List follows) {
         String[] expecteds = expected.split(",");
-        result.addLast(new TokenAfterParse(correntToken.val, correntToken.line, Arrays.toString(expecteds)));
-        erros++;
-        while (tokens.size() > 0) {
-            try {
-                if (follows.contains(correntToken.val) || (follows.contains("IDE") && correntToken.type == Token.T.IDE)) {
-                    break;
-                } else {
-                    result.addLast(new TokenAfterParse(correntToken.val, correntToken.line, Arrays.toString(expecteds), true));
+        try {
+            erros++;
+            result.addLast(new TokenAfterParse(currentToken.val, currentToken.line, Arrays.toString(expecteds)));
+            while (tokens.size() > 0) {
+                try {
+                    if (follows.contains(currentToken.val) || (follows.contains("IDE") && currentToken.type == Token.T.IDE)) {
+                        break;
+                    } else {
+                        result.addLast(new TokenAfterParse(currentToken.val, currentToken.line, Arrays.toString(expecteds), true));
 
+                    }
+                    nextToken(false);
+                } catch (NullPointerException e) {
+                    Token errorParseEOF = new Token(Token.T.EOF, "EOF", -1);
+                    result.addLast(new TokenAfterParse(errorParseEOF.val, -1, Arrays.toString(expecteds)));
                 }
-                nextToken(false);
-            } catch (NullPointerException e) {
-                Token errorParseEOF = new Token(Token.T.EOF, "", -1);
-                result.addLast(new TokenAfterParse(errorParseEOF.val, -1, Arrays.toString(expecteds)));
             }
+        } catch (NullPointerException e) {
+            Token errorParseEOF = new Token(Token.T.EOF, "EOF", -1);
+            result.addLast(new TokenAfterParse(errorParseEOF.val, -1, Arrays.toString(expecteds)));
         }
 //goNextToken(false);
     }

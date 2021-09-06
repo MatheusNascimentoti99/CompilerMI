@@ -1,0 +1,42 @@
+/*
+ * Vetores/matrizes/estruturas
+ */
+
+struct S {
+	const {
+		int cadastro = 16;
+		real cr[10] = {10,10};
+	}
+}
+
+struct T extends{
+	var {
+		int vi;
+		real vr[10];
+	}
+}
+
+var {
+	int vi;
+	real vr[10];
+}
+
+function struct T sum(real vr[]) {
+	var {
+		int i;
+		real s;
+		typedef struct S S;
+
+	S ss[10][10];
+	T t[10][10];
+	}
+
+	while(i < 10)
+		s = s;
+	
+	return s;
+}
+
+procedure start() {
+
+}

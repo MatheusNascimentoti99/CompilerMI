@@ -1,29 +1,33 @@
-struct structTest{
-    const {
-      a[3][10]= {3, 3, 99, teste()},{a > 9,10};
-    }
-    var {
-        int @teste;
-        varStringStruct;
-   } 
+/*
+ * Duplicidade de identificadores globais
+ */
 
+const {
+	real a_ = 6;
+	boolean c = 6;
+	int d = 6;
+}
 
 var {
-    int varInt1, varInt2;
-    real varReal;
-    string varString;
-    struct structDois s1;
+	int a_;    //erro no a_
+	string b;
+	real d; //erro no d
 }
 
-procedure start(){
-    var {
-        int varInt1;
-    }
-    teste[9] = 77;
-  
-}
+function real soma() {
+	var {
+		boolean a_; //normal
+		int c;	   //normal
+		real d;    //normal
+	}
 
-function boolean teste(int a, int b[]){
-	a = b[g+g/4] * 22.5 - (4+5);
-	return a;
+	return c;     //erro tipo diferente
+}    //erro no retorno
+
+procedure start() {
+	var {
+		boolean b; //normal
+		int c;     //normal
+		real d;    //normal
+	}
 }

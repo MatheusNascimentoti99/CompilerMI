@@ -82,10 +82,14 @@ public class main {
                                 parser.startSymbol();
                                 StringBuilder result = new StringBuilder();
                                 result.append(parser.toString());
-                                result.append(lex.hasErros()? "\nArquivo contém " + lex.erros + " erros léxicos" : "\nArquivo sem erros léxicos");
+                                result.append(parser.getParse().errosSem()>0? "\nArquivo contém " + parser.getParse().errosSem() + " erros semânticos": "\nSem erros semânticos");
+                                result.append(parser.getParse().erros()>0? "\nArquivo contém " + parser.getParse().erros()+ " erros sintaticos": "\nSem erros sintaticos");
+                                result.append(lex.hasErros() ? "\nArquivo contém " + lex.erros + " erros léxicos" : "\nArquivo sem erros léxicos");
                                 gravarArq.print(result.toString());
                                 System.out.println("Output criado: saida" + numberEndFile.group() + ".txt");
-                                System.out.println(parser.getParse().hasErros() ? "Arquivo contém " + parser.getParse().erros() + " erros sintáticos\n" : "Sucesso! Arquivo não contém erros sintáticos\n");
+                                System.out.println(parser.getParse().hasErros() ? "Arquivo contém " + parser.getParse().erros() + " erros sintáticos" : "Sucesso! Arquivo não contém erros sintáticos");
+                                System.out.println(parser.getParse().errosSem()>0? "Arquivo contém " + parser.getParse().errosSem()+ " erros semanticos\n" : "Sucesso! Arquivo não contém erros semanticos\n");
+
                             } catch (IOException e) {
                                 System.err.println("Não foi possível criar o arquivo " + outputPath.toString() + "\\saida" + numberEndFile.group() + ".txt");
                             }

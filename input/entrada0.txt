@@ -1,0 +1,31 @@
+/*
+ * Identificadores não declarados
+ */
+
+const {
+	int aa = 2;
+	real bb = 1.0;
+	boolean cc = true;
+}
+
+var {
+	int a;
+	real b;
+	boolean c;
+}
+
+function int f(int a) {
+	var {
+		int a; //Erro 
+		real b;
+		boolean c;
+	}
+	local.a = a;			//Normal
+
+	global.aa = 1;			//Erro Alterar constante
+	
+	return local.a;
+}
+
+procedure start() {
+}

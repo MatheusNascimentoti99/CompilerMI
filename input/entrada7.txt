@@ -49,7 +49,6 @@ procedure oxe1()
 	}
 	
 	print();
-	global.inteiro = 1;
 	local.aa = 1;
 }
 
@@ -61,7 +60,7 @@ procedure oxe1(int a)
 	}
 	
 	print();
-	global.inteiro = 1;
+	global.inteiro = 1.2;
 	local.aa = 1;
 }
 
@@ -119,10 +118,10 @@ function int outra( int b, int aaaaa,int f2)
 		int c;
 	}
 	print();
-	global.inteiro = b + 1+ local.c;
-	local.aa = b + 1+ local.c;
+	global.inteiro = b + 1.2 + local.c;
+	local.aa = 1;
 
-	return local.c;
+	return b + 1.2 + local.c;
 }
 
 procedure start()

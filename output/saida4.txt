@@ -1,65 +1,236 @@
-3 PRE var
-4 DEL {
-5 PRE int
-5 IDE inteiro
-5 DEL ;
-6 PRE int
-6 IDE a
-6 DEL ;
-7 PRE real
-7 IDE numero_real
-7 DEL ;
-8 PRE real
-8 IDE numero_real2
-8 DEL ;
-9 DEL }
-11 PRE procedure
-11 PRE start
-11 DEL (
-11 DEL )
-12 DEL {
-14 IDE inteiro
-14 REL =
-14 NRO 1
-14 DEL ;
-15 IDE a
-15 REL =
-15 NRO 1.1
-15 DEL ;
-16 IDE numero_real
-16 REL =
-16 NRO 1.123456789
-17 ParserError numero_real2    Esperado: [;]
-17 IDE numero_real2
-17 REL =
-17 NRO 123456789.1
-19 ParserError inteiro    Esperado: [;]
-19 IDE inteiro
-19 REL =
-19 ParserError .    Esperado: [LOG,  CAD,  NRO,  'local,  'global',  IDE,  (]
-19 ParserError .    Esperado: [LOG,  CAD,  NRO,  'local,  'global',  IDE,  (]    - Em Modo Pânico
-19 ParserError 1    Esperado: [LOG,  CAD,  NRO,  'local,  'global',  IDE,  (]    - Em Modo Pânico
-19 DEL ;
-20 IDE a
-20 REL =
-20 NRO 1.1
-20 SIB _
-20 DEL ;
-21 IDE numero_real
-21 REL =
-21 NRO 1.123456
-21 ParserError .    Esperado: [;]
-21 ParserError .    Esperado: [;]    - Em Modo Pânico
-21 ParserError 789    Esperado: [;]    - Em Modo Pânico
-22 IDE numero_real2
-22 REL =
-22 NRO 1234
-22 SIB @
-22 ParserError 56789.1    Esperado: [;]
-22 ParserError 56789.1    Esperado: [}]
+5 PRE  [ procedure ]   
+5 IDE  [ teste ]   
+5 DEL  [ ( ]   
+5 DEL  [ ) ]   
+5 DEL  [ { ]   
+5 DEL  [ } ]   
+7 PRE  [ procedure ]   
+7 IDE  [ p ]   
+7 DEL  [ ( ]   
+7 PRE  [ int ]   
+7 IDE  [ a ]   
+7 DEL  [ ) ]   
+7 DEL  [ { ]   
+7 DEL  [ } ]   
+9 PRE  [ procedure ]   
+9 IDE  [ p ]   
+9 DEL  [ ( ]   
+9 PRE  [ int ]   
+9 IDE  [ a ]   
+9 DEL  [ [ ]   
+9 DEL  [ ] ]   
+9 DEL  [ ) ]   
+9 DEL  [ { ]   
+9 DEL  [ } ]   
+11 PRE  [ procedure ]   
+11 IDE  [ p ]   
+11 DEL  [ ( ]   
+11 PRE  [ string ]   
+11 IDE  [ a ]   
+11 DEL  [ , ]   
+11 PRE  [ real ]   
+11 IDE  [ b ]   
+11 DEL  [ ) ]   
+11 DEL  [ { ]   
+11 DEL  [ } ]   
+13 PRE  [ procedure ]   
+13 IDE  [ p ]   
+13 DEL  [ ( ]   
+13 PRE  [ string ]   
+13 IDE  [ nome ]   
+13 DEL  [ [ ]   
+13 DEL  [ ] ]   
+13 DEL  [ , ]   
+13 PRE  [ real ]   
+13 IDE  [ b ]   
+13 DEL  [ ) ]   
+13 DEL  [ { ]   
+13 DEL  [ } ]   
+15 PRE  [ procedure ]   
+15 IDE  [ p ]   
+15 DEL  [ ( ]   
+15 PRE  [ real ]   
+15 IDE  [ a ]   
+15 DEL  [ , ]   
+15 PRE  [ int ]   
+15 IDE  [ b ]   
+15 DEL  [ ) ]   
+15 DEL  [ { ]   
+15 DEL  [ } ]   
+17 PRE  [ procedure ]   
+17 IDE  [ teste ]   
+17 DEL  [ ( ]   
+17 SEMANTIC  [ ) ]   já existe uma função ou procedimento com a mesma assinatura
+17 DEL  [ ) ]   
+17 DEL  [ { ]   
+17 DEL  [ } ]   
+19 PRE  [ procedure ]   
+19 IDE  [ testes ]   
+19 DEL  [ ( ]   
+19 DEL  [ ) ]   
+19 DEL  [ { ]   
+19 DEL  [ } ]   
+21 PRE  [ procedure ]   
+21 IDE  [ p ]   
+21 DEL  [ ( ]   
+21 PRE  [ int ]   
+21 IDE  [ x ]   
+21 DEL  [ , ]   
+21 PRE  [ real ]   
+21 IDE  [ y ]   
+21 DEL  [ ) ]   
+21 DEL  [ { ]   
+21 DEL  [ } ]   
+23 PRE  [ function ]   
+23 PRE  [ int ]   
+23 IDE  [ f ]   
+23 DEL  [ ( ]   
+23 DEL  [ ) ]   
+23 DEL  [ { ]   
+23 PRE  [ return ]   
+23 INT  [ 1 ]   
+23 DEL  [ ; ]   
+23 DEL  [ } ]   
+25 PRE  [ function ]   
+25 PRE  [ real ]   
+25 IDE  [ f ]   
+25 DEL  [ ( ]   
+25 SEMANTIC  [ ) ]   já existe uma função ou procedimento com a mesma assinatura
+25 DEL  [ ) ]   
+25 DEL  [ { ]   
+25 PRE  [ return ]   
+25 REAL  [ 1.1 ]   
+25 DEL  [ ; ]   
+25 DEL  [ } ]   
+27 PRE  [ function ]   
+27 PRE  [ boolean ]   
+27 IDE  [ f ]   
+27 DEL  [ ( ]   
+27 PRE  [ real ]   
+27 IDE  [ a ]   
+27 DEL  [ ) ]   
+27 DEL  [ { ]   
+27 PRE  [ return ]   
+27 PRE  [ false ]   
+27 DEL  [ ; ]   
+27 DEL  [ } ]   
+29 PRE  [ function ]   
+29 PRE  [ int ]   
+29 IDE  [ f ]   
+29 DEL  [ ( ]   
+29 PRE  [ real ]   
+29 IDE  [ a ]   
+29 SEMANTIC  [ ) ]   já existe uma função ou procedimento com a mesma assinatura
+29 DEL  [ ) ]   
+29 DEL  [ { ]   
+29 PRE  [ return ]   
+29 INT  [ 1 ]   
+29 DEL  [ ; ]   
+29 DEL  [ } ]   
+31 PRE  [ function ]   
+31 PRE  [ string ]   
+31 IDE  [ f ]   
+31 DEL  [ ( ]   
+31 PRE  [ string ]   
+31 IDE  [ a ]   
+31 DEL  [ ) ]   
+31 DEL  [ { ]   
+31 PRE  [ return ]   
+31 CAD  [ "" ]   
+31 DEL  [ ; ]   
+31 DEL  [ } ]   
+33 PRE  [ function ]   
+33 PRE  [ string ]   
+33 IDE  [ f ]   
+33 DEL  [ ( ]   
+33 PRE  [ string ]   
+33 IDE  [ a ]   
+33 DEL  [ [ ]   
+33 DEL  [ ] ]   
+33 DEL  [ ) ]   
+33 DEL  [ { ]   
+33 PRE  [ return ]   
+33 CAD  [ "hello world" ]   
+33 DEL  [ ; ]   
+33 DEL  [ } ]   
+35 PRE  [ function ]   
+35 PRE  [ real ]   
+35 IDE  [ f ]   
+35 DEL  [ ( ]   
+35 SEMANTIC  [ ) ]   já existe uma função ou procedimento com a mesma assinatura
+35 DEL  [ ) ]   
+35 DEL  [ { ]   
+35 PRE  [ return ]   
+35 REAL  [ 1.2 ]   
+35 DEL  [ ; ]   
+35 DEL  [ } ]   
+37 PRE  [ function ]   
+37 PRE  [ string ]   
+37 IDE  [ f ]   
+37 DEL  [ ( ]   
+37 PRE  [ real ]   
+37 IDE  [ a ]   
+37 SEMANTIC  [ ) ]   já existe uma função ou procedimento com a mesma assinatura
+37 DEL  [ ) ]   
+37 DEL  [ { ]   
+37 PRE  [ return ]   
+37 CAD  [ "test" ]   
+37 DEL  [ ; ]   
+37 DEL  [ } ]   
+39 PRE  [ procedure ]   
+39 PRE  [ start ]   
+39 DEL  [ ( ]   
+39 DEL  [ ) ]   
+39 DEL  [ { ]   
+40 IDE  [ a ]   
+40 SEMANTIC  [ a ]   o valor não está definido
+40 REL  [ = ]   
+40 IDE  [ f ]   
+40 DEL  [ ( ]   
+40 DEL  [ ) ]   
+40 SEMANTIC  [ a ]   o valor não está definido
+40 DEL  [ ; ]   
+41 IDE  [ f ]   
+41 DEL  [ ( ]   
+41 REAL  [ 1.1 ]   
+41 DEL  [ ) ]   
+41 DEL  [ ; ]   
+42 IDE  [ f ]   
+42 DEL  [ ( ]   
+42 CAD  [ "teste" ]   
+42 DEL  [ ) ]   
+42 DEL  [ ; ]   
+43 IDE  [ f ]   
+43 DEL  [ ( ]   
+43 PRE  [ true ]   
+43 SEMANTIC  [ f ]   o método não está definido
+43 DEL  [ ) ]   
+43 DEL  [ ; ]   
+44 IDE  [ f ]   
+44 DEL  [ ( ]   
+44 PRE  [ true ]   
+44 DEL  [ , ]   
+44 PRE  [ false ]   
+44 DEL  [ , ]   
+44 PRE  [ false ]   
+44 DEL  [ , ]   
+44 PRE  [ false ]   
+44 SEMANTIC  [ f ]   o método não está definido
+44 DEL  [ ) ]   
+44 DEL  [ ; ]   
+46 DEL  [ } ]   
+48 ParserError  [ procedure ]       Esperado: [EOF]
+48 PRE  [ procedure ]   
+48 PRE  [ start ]   
+48 DEL  [ ( ]   
+48 DEL  [ ) ]   
+48 DEL  [ { ]   
+48 DEL  [ } ]   
 
 
 -------------------------
 
-Arquivo contém 6 erros sintáticos (excluindo Modo Pânico)
-Arquivo contém 2 erros léxicos
+
+Arquivo contém 9 erros semânticos
+Arquivo contém 1 erros sintaticos
+Arquivo sem erros léxicos

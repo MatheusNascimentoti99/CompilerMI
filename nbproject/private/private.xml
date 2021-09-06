@@ -5,9 +5,17 @@
         <group>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Controller/ParserController.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Token.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Var.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/View/main.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/TokenAfterParse.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Controller/TableController.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Interface/Method.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Function.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Struct.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Typedef.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Controller/LexController.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Utils/VarTable.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/TokenAfterParse.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Procedure.java</file>
             <file>file:/D:/Documents/NetBeansProjects/Compiler/src/Model/Parser.java</file>
         </group>
     </open-files>

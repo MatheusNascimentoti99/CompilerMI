@@ -14,68 +14,18 @@ import java.util.Objects;
  *
  * @author Matheus Nascimento
  */
-public class Procedure implements Method {
+public class Function implements Method {
 
     private String type;
     private LinkedList<Var> params;
     private String name;
     private boolean isUsing;
 
-    public Procedure() {
-        params = new LinkedList<>();
-        type = "void";
+    public Function() {
+        this.params = new LinkedList<>();
     }
 
     @Override
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean isFunction() {
-        return false;
-    }
-
-    @Override
-    public LinkedList<Var> params() {
-        return params;
-    }
-
-    @Override
-    public String typeReturn() {
-        return "void";
-    }
-
-    @Override
-    public void addParams(Var var) {
-        params.add(var);
-    }
-
-    @Override
-    public boolean checkParams(LinkedList<Var> params) {
-        int index = 0;
-        for (Iterator<Var> i = this.params.iterator(); i.hasNext() && index < params.size();) {
-            Var aux = i.next();
-            if (!params.get(index).getType().equals(aux.getType())) {
-                return false;
-            } else if (params.get(index).getDimessionArray() != aux.getDimessionArray()) {
-                return false;
-            }
-            index++;
-        }
-        return params.size() == this.params.size();
-    }
-
-        @Override
     public int hashCode() {
         int hash = 3;
         hash = 73 * hash +hashParams();
@@ -110,4 +60,73 @@ public class Procedure implements Method {
 
     }
 
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public LinkedList<Var> getParams() {
+        return params;
+    }
+
+    public void setParams(LinkedList<Var> params) {
+        this.params = params;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+    
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isIsUsing() {
+        return isUsing;
+    }
+
+    public void setIsUsing(boolean isUsing) {
+        this.isUsing = isUsing;
+    }
+
+    @Override
+    public boolean isFunction() {
+        return true;
+    }
+
+    @Override
+    public LinkedList<Var> params() {
+        return params;
+    }
+
+    @Override
+    public String typeReturn() {
+        return type;
+    }
+
+    @Override
+    public void addParams(Var var) {
+        params.add(var);
+    }
+
+    @Override
+    public boolean checkParams(LinkedList<Var> params) {
+        int index = 0;
+        for (Iterator<Var> i = this.params.iterator(); i.hasNext() && index < params.size();) {
+            Var aux = i.next();
+            if (!params.get(index).getType().equals(aux.getType())) {
+                return false;
+            } else if (params.get(index).getDimessionArray() != aux.getDimessionArray()) {
+                return false;
+            }
+            index++;
+        }
+        return params.size() == this.params.size();
+    }
 }
